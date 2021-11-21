@@ -154,7 +154,7 @@ function ju52.attach_pax(self, player, is_copilot)
     local is_copilot = is_copilot or false
     local name = player:get_player_name()
 
-    if is_copilot then
+    if is_copilot == true then
         if self._passenger == nil then
             self._passenger = name
 
@@ -185,11 +185,11 @@ function ju52.attach_pax(self, player, is_copilot)
             t[a],t[b] = t[b],t[a]
         end
 
-        for k = 1, #t
-        do
+        --for i = 1,10,1 do
+        for k,v in ipairs(t) do
             i = t[k]
-            --minetest.chat_send_all('array: '.. i)
             if self._passengers[i] == nil then
+                --minetest.chat_send_all(self.driver_name)
                 self._passengers[i] = name
                 player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
                 if i > 2 then

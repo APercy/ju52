@@ -138,8 +138,8 @@ minetest.register_entity("ju52:ju52", {
     _last_accell = {x=0,y=0,z=0},
     _flap = false,
     _wing_configuration = ju52.wing_angle_of_attack,
-    _passengers_base = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil, [8]=nil, [9]=nil, [10]=nil,},
-    _passengers = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil, [8]=nil, [9]=nil, [10]=nil,},
+    _passengers_base = {},
+    _passengers = {},
 
     get_staticdata = function(self) -- unloaded/unloads ... is now saved
         return minetest.serialize({
@@ -183,45 +183,38 @@ minetest.register_entity("ju52:ju52", {
         co_pilot_seat_base:set_attach(self.object,'',{x=6.5,y=8.7,z=20},{x=0,y=0,z=0})
 	    self.co_pilot_seat_base = co_pilot_seat_base
 
-        local seat_base=minetest.add_entity(pos,'ju52:seat_base')
-        seat_base:set_attach(self.object,'',{x=-6.5,y=6.7,z=9},{x=0,y=0,z=0})
-	    self._passengers_base[1] = seat_base
+        self._passengers_base = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil, [8]=nil, [9]=nil, [10]=nil,}
+        self._passengers = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil, [8]=nil, [9]=nil, [10]=nil,}
 
-        seat_base=minetest.add_entity(pos,'ju52:seat_base')
-        seat_base:set_attach(self.object,'',{x=6.5,y=6.7,z=9},{x=0,y=0,z=0})
-	    self._passengers_base[2] = seat_base
+        self._passengers_base[1]=minetest.add_entity(pos,'ju52:seat_base')
+        self._passengers_base[1]:set_attach(self.object,'',{x=-6.5,y=6.7,z=9},{x=0,y=0,z=0})
 
-        seat_base=minetest.add_entity(pos,'ju52:seat_base')
-        seat_base:set_attach(self.object,'',{x=-6.5,y=6.7,z=-0.9},{x=0,y=0,z=0})
-	    self._passengers_base[3] = seat_base
+        self._passengers_base[2]=minetest.add_entity(pos,'ju52:seat_base')
+        self._passengers_base[2]:set_attach(self.object,'',{x=6.5,y=6.7,z=9},{x=0,y=0,z=0})
 
-        seat_base=minetest.add_entity(pos,'ju52:seat_base')
-        seat_base:set_attach(self.object,'',{x=6.5,y=6.7,z=-0.9},{x=0,y=0,z=0})
-	    self._passengers_base[4] = seat_base
+        self._passengers_base[3]=minetest.add_entity(pos,'ju52:seat_base')
+        self._passengers_base[3]:set_attach(self.object,'',{x=-6.5,y=6.7,z=-0.9},{x=0,y=0,z=0})
 
-        seat_base=minetest.add_entity(pos,'ju52:seat_base')
-        seat_base:set_attach(self.object,'',{x=-6.5,y=6.7,z=-10.7},{x=0,y=0,z=0})
-	    self._passengers_base[5] = seat_base
+        self._passengers_base[4]=minetest.add_entity(pos,'ju52:seat_base')
+        self._passengers_base[4]:set_attach(self.object,'',{x=6.5,y=6.7,z=-0.9},{x=0,y=0,z=0})
 
-        seat_base=minetest.add_entity(pos,'ju52:seat_base')
-        seat_base:set_attach(self.object,'',{x=6.5,y=6.7,z=-10.7},{x=0,y=0,z=0})
-	    self._passengers_base[6] = seat_base
+        self._passengers_base[5]=minetest.add_entity(pos,'ju52:seat_base')
+        self._passengers_base[5]:set_attach(self.object,'',{x=-6.5,y=6.7,z=-10.7},{x=0,y=0,z=0})
 
-        seat_base=minetest.add_entity(pos,'ju52:seat_base')
-        seat_base:set_attach(self.object,'',{x=-6.5,y=6.7,z=-20.5},{x=0,y=0,z=0})
-	    self._passengers_base[7] = seat_base
+        self._passengers_base[6]=minetest.add_entity(pos,'ju52:seat_base')
+        self._passengers_base[6]:set_attach(self.object,'',{x=6.5,y=6.7,z=-10.7},{x=0,y=0,z=0})
 
-        seat_base=minetest.add_entity(pos,'ju52:seat_base')
-        seat_base:set_attach(self.object,'',{x=6.5,y=6.7,z=-20.5},{x=0,y=0,z=0})
-	    self._passengers_base[8] = seat_base
+        self._passengers_base[7]=minetest.add_entity(pos,'ju52:seat_base')
+        self._passengers_base[7]:set_attach(self.object,'',{x=-6.5,y=6.7,z=-20.5},{x=0,y=0,z=0})
 
-        seat_base=minetest.add_entity(pos,'ju52:seat_base')
-        seat_base:set_attach(self.object,'',{x=-6.5,y=6.7,z=-30.5},{x=0,y=0,z=0})
-	    self._passengers_base[9] = seat_base
+        self._passengers_base[8]=minetest.add_entity(pos,'ju52:seat_base')
+        self._passengers_base[8]:set_attach(self.object,'',{x=6.5,y=6.7,z=-20.5},{x=0,y=0,z=0})
 
-        seat_base=minetest.add_entity(pos,'ju52:seat_base')
-        seat_base:set_attach(self.object,'',{x=6.5,y=6.7,z=-30.5},{x=0,y=0,z=0})
-	    self._passengers_base[10] = seat_base
+        self._passengers_base[9]=minetest.add_entity(pos,'ju52:seat_base')
+        self._passengers_base[9]:set_attach(self.object,'',{x=-6.5,y=6.7,z=-30.5},{x=0,y=0,z=0})
+
+        self._passengers_base[10]=minetest.add_entity(pos,'ju52:seat_base')
+        self._passengers_base[10]:set_attach(self.object,'',{x=6.5,y=6.7,z=-30.5},{x=0,y=0,z=0})
 
 		self.object:set_armor_groups({immortal=1})
 	end,
