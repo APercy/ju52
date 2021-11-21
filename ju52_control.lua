@@ -186,7 +186,7 @@ end
 function ju52.rudder_auto_correction(self, longit_speed, dtime)
     local factor = 1
     if self._rudder_angle > 0 then factor = -1 end
-    local correction = (ju52.rudder_limit*(longit_speed/4000)) * factor * (dtime/ju52.ideal_step)
+    local correction = (ju52.rudder_limit*(longit_speed/5000)) * factor * (dtime/ju52.ideal_step)
     local before_correction = self._rudder_angle
     local new_rudder_angle = self._rudder_angle + correction
     if math.sign(before_correction) ~= math.sign(new_rudder_angle) then

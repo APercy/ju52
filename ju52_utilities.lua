@@ -133,35 +133,101 @@ function ju52.dettachPlayer(self, player)
     --remove_physics_override(player, {speed=1,gravity=1,jump=1})
 end
 
--- attach passenger
-function ju52.attach_pax(self, player)
-    local name = player:get_player_name()
-    self._passenger = name
-
-    -- attach the driver
-    if self._instruction_mode == true then
-        player:set_attach(self.pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-        player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 3, z = -30})
-    else
-        player:set_attach(self.co_pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-        player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 3, z = -30})
-    end
-    player_api.player_attached[name] = true
-    -- make the driver sit
-    minetest.after(0.2, function()
-        player = minetest.get_player_by_name(name)
-        if player then
-	        player_api.set_animation(player, "sit")
-            --apply_physics_override(player, {speed=0,gravity=0,jump=0})
+function ju52.check_passenger_is_attached(self, name)
+    local is_attached = false
+    if self._passenger == name then is_attached = true end
+    if is_attached == false then
+        for i = 10,1,-1 
+        do 
+            if self._passengers[i] == name then
+                is_attached = true
+                break
+            end
         end
-    end)
+    end
+    return is_attached
+end
+
+
+-- attach passenger
+function ju52.attach_pax(self, player, is_copilot)
+    local is_copilot = is_copilot or false
+    local name = player:get_player_name()
+
+    if is_copilot then
+        if self._passenger == nil then
+            self._passenger = name
+
+            -- attach the driver
+            if self._instruction_mode == true then
+                player:set_attach(self.pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+                player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 3, z = -30})
+            else
+                player:set_attach(self.co_pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+                player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 3, z = -30})
+            end
+            player_api.player_attached[name] = true
+            -- make the driver sit
+            minetest.after(0.2, function()
+                player = minetest.get_player_by_name(name)
+                if player then
+	                player_api.set_animation(player, "sit")
+                    --apply_physics_override(player, {speed=0,gravity=0,jump=0})
+                end
+            end)
+        end
+    else
+        --randomize the seat
+        local t = {1,2,3,4,5,6,7,8,9,10}
+        for i = 1, #t*2 do
+            local a = math.random(#t)
+            local b = math.random(#t)
+            t[a],t[b] = t[b],t[a]
+        end
+
+        for k = 1, #t
+        do
+            i = t[k]
+            --minetest.chat_send_all('array: '.. i)
+            if self._passengers[i] == nil then
+                self._passengers[i] = name
+                player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+                if i > 2 then
+                    player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 3, z = -30})
+                else
+                    player:set_eye_offset({x = 0, y = -4, z = 0}, {x = 0, y = 3, z = -30})
+                end
+                player_api.player_attached[name] = true
+                -- make the driver sit
+                minetest.after(0.2, function()
+                    player = minetest.get_player_by_name(name)
+                    if player then
+	                    player_api.set_animation(player, "sit")
+                        --apply_physics_override(player, {speed=0,gravity=0,jump=0})
+                    end
+                end)
+                break
+            end
+        end
+
+    end
 end
 
 function ju52.dettach_pax(self, player)
-    local name = self._passenger
+    local name = player:get_player_name() --self._passenger
 
     -- passenger clicked the object => driver gets off the vehicle
-    self._passenger = nil
+    if self._passenger == name then
+        self._passenger = nil
+    else
+        for i = 10,1,-1 
+        do 
+            if self._passengers[i] == name then
+                self._passengers[i] = nil
+                break
+            end
+        end
+    end
 
     -- detach the player
     player:set_detach()
@@ -204,7 +270,18 @@ function ju52.destroy(self)
     local pos = self.object:get_pos()
     if self.engine then self.engine:remove() end
     if self.pilot_seat_base then self.pilot_seat_base:remove() end
+    if self.co_pilot_seat_base then self.co_pilot_seat_base:remove() end
 
+    if self._passengers_base[10] then self._passengers_base[10]:remove() end
+    if self._passengers_base[9]  then self._passengers_base[9]:remove() end
+    if self._passengers_base[8]  then self._passengers_base[8]:remove() end
+    if self._passengers_base[7]  then self._passengers_base[7]:remove() end
+    if self._passengers_base[6]  then self._passengers_base[6]:remove() end
+    if self._passengers_base[5]  then self._passengers_base[5]:remove() end
+    if self._passengers_base[4]  then self._passengers_base[4]:remove() end
+    if self._passengers_base[3]  then self._passengers_base[3]:remove() end
+    if self._passengers_base[2]  then self._passengers_base[2]:remove() end
+    if self._passengers_base[1]  then self._passengers_base[1]:remove() end
 
     if self.stick then self.stick:remove() end
 
@@ -231,7 +308,7 @@ end
 function ju52.check_node_below(obj)
     local pos_below = obj:get_pos()
     if pos_below then
-        pos_below.y = pos_below.y - 0.4
+        pos_below.y = pos_below.y - 2.5
         local node_below = minetest.get_node(pos_below).name
         local nodedef = minetest.registered_nodes[node_below]
         local touching_ground = not nodedef or -- unknown nodes are solid
@@ -580,7 +657,7 @@ function ju52.flightstep(self)
         local snormal = {x=sdir.z,y=0,z=-sdir.x}	-- rightside, dot is negative
         local prsr = ju52.dot(snormal,nhdir)
         local rollfactor = -90
-        local roll_rate = math.rad(15)
+        local roll_rate = math.rad(12)
         newroll = (prsr*math.rad(rollfactor)) * (later_speed * roll_rate) * ju52.sign(longit_speed)
         --minetest.chat_send_all('newroll: '.. newroll)
     else
@@ -624,7 +701,7 @@ function ju52.flightstep(self)
 
     --lift calculation
     --accel.y = accel_y
-    accel.y = mobkit.gravity
+    accel.y = accel.y + mobkit.gravity
 
     --lets apply some bob in water
 	if self.isinliquid then

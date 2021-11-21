@@ -70,47 +70,47 @@ minetest.register_entity("ju52:ju52", {
 	    mesh = "ju52_mine.b3d",
         stepheight = 0.6,
         textures = {
-                    "ju52_metal.png", --bequilha
-                    "ju52_brown.png", --assentos pilotos
-                    "ju52_brown.png", --assentos passageiros
-                    "ju52_brown.png", --assentos passageiros
-                    "ju52_brown.png", --assentos passageiros
-                    "ju52_brown.png", --assentos passageiros
-                    "ju52_brown.png", --assentos passageiros
-                    ju52.skin_texture, --proteção motor
-                    "ju52_metal.png", "ju52_black.png", --escapamento
-                    ju52.skin_texture, --superficies controle
-                    "ju52_compass.png", --bussola
-                    "ju52_white.png", --ponteiros
-                    "ju52_metal.png", "ju52_black.png", --manetes potencia
-                    ju52.skin_texture, --porta exterior
-                    "ju52_glass.png", -- vidro porta
-                    "ju52_bege.png", -- interno porta
-                    "ju52_engine.png", "ju52_black.png", --motor
-                    "ju52_engine.png", "ju52_black.png", --motores
-                    ju52.skin_texture, --fuselagem
-                    "ju52_black.png", -- aros mostradores
-                    "ju52_climber.png", --climbers
-                    "ju52_speed.png", --indicadores de velocidade
-                    "ju52_altimeter.png", --altimetros
-                    "ju52_fuel.png", --combustivel
-                    "ju52_compass_ind.png", --indicador da bussola
-                    "ju52_glass.png", -- vidros laterais
-                    ju52.skin_texture, -- estabilizador horizontal
-                    "ju52_bege.png", -- interior
-                    "ju52_metal.png", "ju52_black.png", --assoalho
-                    "ju52_metal.png", -- interno cabine - pes
-                    "ju52_bege.png", -- interior cauda
-                    ju52.skin_texture, --trem de pouso
-                    "ju52_panel_color.png", "ju52_black.png", --painel
-                    "ju52_panel_color.png", "ju52_black.png", --console de manetes
-                    "ju52_black.png", "ju52_metal.png", --pneu da bequilha
-                    ju52.skin_texture, --estabilizador vertical
-                    "ju52_black.png", "ju52_metal.png", --pneus do trem principal
-                    "ju52_glass.png", "ju52_metal.png", -- vidros parabrisa
-                    ju52.skin_texture, --asas
-                    --"ju52_red.png", --
-                    --"ju52_white.png", --asas
+                "ju52_metal.png", --bequilha
+                "ju52_brown.png", --assentos pilotos
+                "ju52_brown.png", --assentos passageiros
+                "ju52_brown.png", --assentos passageiros
+                "ju52_brown.png", --assentos passageiros
+                "ju52_brown.png", --assentos passageiros
+                "ju52_brown.png", --assentos passageiros
+                ju52.skin_texture, --proteção motor
+                "ju52_metal.png", "ju52_black.png", --escapamento
+                ju52.skin_texture, --superficies controle
+                "ju52_compass.png", --bussola
+                "ju52_white.png", --ponteiros
+                "ju52_metal.png", "ju52_black.png", --manetes potencia
+                ju52.skin_texture, --porta exterior
+                "ju52_glass.png", -- vidro porta
+                "ju52_bege.png", -- interno porta
+                "ju52_engine.png", "ju52_black.png", --motor
+                "ju52_engine.png", "ju52_black.png", --motores
+                ju52.skin_texture, --fuselagem
+                "ju52_black.png", -- aros mostradores
+                "ju52_climber.png", --climbers
+                "ju52_speed.png", --indicadores de velocidade
+                "ju52_altimeter.png", --altimetros
+                "ju52_fuel.png", --combustivel
+                "ju52_compass_ind.png", --indicador da bussola
+                "ju52_glass.png", -- vidros laterais
+                ju52.skin_texture, -- estabilizador horizontal
+                "ju52_bege.png", -- interior
+                "ju52_metal.png", "ju52_black.png", --assoalho
+                "ju52_metal.png", -- interno cabine - pes
+                "ju52_bege.png", -- interior cauda
+                ju52.skin_texture, --trem de pouso
+                "ju52_panel_color.png", "ju52_black.png", --painel
+                "ju52_panel_color.png", "ju52_black.png", --console de manetes
+                "ju52_black.png", "ju52_metal.png", --pneu da bequilha
+                ju52.skin_texture, --estabilizador vertical
+                "ju52_black.png", "ju52_metal.png", --pneus do trem principal
+                "ju52_glass.png", "ju52_metal.png", -- vidros parabrisa
+                ju52.skin_texture, --asas
+                --"ju52_red.png", --
+                --"ju52_white.png", --asas
             },
     },
     textures = {},
@@ -138,6 +138,8 @@ minetest.register_entity("ju52:ju52", {
     _last_accell = {x=0,y=0,z=0},
     _flap = false,
     _wing_configuration = ju52.wing_angle_of_attack,
+    _passengers_base = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil, [8]=nil, [9]=nil, [10]=nil,},
+    _passengers = {[1]=nil, [2]=nil, [3]=nil, [4]=nil, [5]=nil, [6]=nil, [7]=nil, [8]=nil, [9]=nil, [10]=nil,},
 
     get_staticdata = function(self) -- unloaded/unloads ... is now saved
         return minetest.serialize({
@@ -180,6 +182,46 @@ minetest.register_entity("ju52:ju52", {
         local co_pilot_seat_base=minetest.add_entity(pos,'ju52:seat_base')
         co_pilot_seat_base:set_attach(self.object,'',{x=6.5,y=8.7,z=20},{x=0,y=0,z=0})
 	    self.co_pilot_seat_base = co_pilot_seat_base
+
+        local seat_base=minetest.add_entity(pos,'ju52:seat_base')
+        seat_base:set_attach(self.object,'',{x=-6.5,y=6.7,z=9},{x=0,y=0,z=0})
+	    self._passengers_base[1] = seat_base
+
+        seat_base=minetest.add_entity(pos,'ju52:seat_base')
+        seat_base:set_attach(self.object,'',{x=6.5,y=6.7,z=9},{x=0,y=0,z=0})
+	    self._passengers_base[2] = seat_base
+
+        seat_base=minetest.add_entity(pos,'ju52:seat_base')
+        seat_base:set_attach(self.object,'',{x=-6.5,y=6.7,z=-0.9},{x=0,y=0,z=0})
+	    self._passengers_base[3] = seat_base
+
+        seat_base=minetest.add_entity(pos,'ju52:seat_base')
+        seat_base:set_attach(self.object,'',{x=6.5,y=6.7,z=-0.9},{x=0,y=0,z=0})
+	    self._passengers_base[4] = seat_base
+
+        seat_base=minetest.add_entity(pos,'ju52:seat_base')
+        seat_base:set_attach(self.object,'',{x=-6.5,y=6.7,z=-10.7},{x=0,y=0,z=0})
+	    self._passengers_base[5] = seat_base
+
+        seat_base=minetest.add_entity(pos,'ju52:seat_base')
+        seat_base:set_attach(self.object,'',{x=6.5,y=6.7,z=-10.7},{x=0,y=0,z=0})
+	    self._passengers_base[6] = seat_base
+
+        seat_base=minetest.add_entity(pos,'ju52:seat_base')
+        seat_base:set_attach(self.object,'',{x=-6.5,y=6.7,z=-20.5},{x=0,y=0,z=0})
+	    self._passengers_base[7] = seat_base
+
+        seat_base=minetest.add_entity(pos,'ju52:seat_base')
+        seat_base:set_attach(self.object,'',{x=6.5,y=6.7,z=-20.5},{x=0,y=0,z=0})
+	    self._passengers_base[8] = seat_base
+
+        seat_base=minetest.add_entity(pos,'ju52:seat_base')
+        seat_base:set_attach(self.object,'',{x=-6.5,y=6.7,z=-30.5},{x=0,y=0,z=0})
+	    self._passengers_base[9] = seat_base
+
+        seat_base=minetest.add_entity(pos,'ju52:seat_base')
+        seat_base:set_attach(self.object,'',{x=6.5,y=6.7,z=-30.5},{x=0,y=0,z=0})
+	    self._passengers_base[10] = seat_base
 
 		self.object:set_armor_groups({immortal=1})
 	end,
@@ -289,44 +331,6 @@ minetest.register_entity("ju52:ju52", {
         
 	end,
 
-	--[[on_rightclick = function(self, clicker)
-		if not clicker or not clicker:is_player() then
-			return
-		end
-
-        local name = clicker:get_player_name()
-
-        if self.owner == "" then
-            self.owner = name
-        end
-
-        --check if is the owner
-        if self.owner == name then
-            -- pilot section
-            if name == self.driver_name then
-                --=========================
-                --  dettach player
-                --=========================
-                ju52.dettachPlayer(self, clicker)
-            elseif not self.driver_name then
-                --=========================
-                --  attach player
-                --=========================
-                --attach player
-                local is_under_water = ju52.check_is_under_water(self.object)
-                if is_under_water then return end
-
-                self._elevator_angle = 0
-                self._rudder_angle = 0
-                ju52.attach(self, clicker)
-            end
-
-            -- end pilot section
-        else
-            local message = core.colorize('#ff0000', " >>> You aren't the owner of this Ju 52.")
-            minetest.chat_send_player(clicker:get_player_name(), message)
-        end
-	end,]]--
 	on_rightclick = function(self, clicker)
 		if not clicker or not clicker:is_player() then
 			return
@@ -354,9 +358,20 @@ minetest.register_entity("ju52:ju52", {
                     local touching_ground, liquid_below = ju52.check_node_below(self.object)
                     if self.isinliquid or touching_ground then --isn't flying?
                         --ok, remove pax
+                        local passenger = nil
                         if self._passenger then
-                            local passenger = minetest.get_player_by_name(self._passenger)
+                            passenger = minetest.get_player_by_name(self._passenger)
                             if passenger then ju52.dettach_pax(self, passenger) end
+                        end
+                        for i = 10,1,-1 
+                        do 
+                            if self._passengers[i] then
+                                passenger = minetest.get_player_by_name(self._passengers[i])
+                                if passenger then
+                                    ju52.dettach_pax(self, passenger)
+                                    --minetest.chat_send_all('saiu')
+                                end
+                            end
                         end
                     else
                         --give the control to the pax
@@ -386,6 +401,13 @@ minetest.register_entity("ju52:ju52", {
                         local passenger = minetest.get_player_by_name(self._passenger)
                         if passenger then ju52.dettach_pax(self, passenger) end
                     end
+                    for i = 10,1,-1 
+                    do 
+                        if self._passengers[i] then
+                            local passenger = minetest.get_player_by_name(self._passengers[i])
+                            if passenger then ju52.dettach_pax(self, passenger) end
+                        end
+                    end
 
 		            if clicker:get_player_control().sneak == true then
                         -- flight instructor mode
@@ -411,14 +433,26 @@ minetest.register_entity("ju52:ju52", {
             --passenger section
             --only can enter when the pilot is inside
             local message = core.colorize('#ff0000', " >>> You aren't the owner of this airplane.")
-            if self.driver_name ~= nil then
+            if self.driver_name ~= nil or self._autoflymode == true then
                 local player = minetest.get_player_by_name(self.driver_name)
                 if player then
-                    if self._passenger == nil then
-                        ju52.attach_pax(self, clicker)
-                    else
+
+                    local is_attached = ju52.check_passenger_is_attached(self, name)
+
+                    if is_attached then
+                        --remove pax
                         ju52.dettach_pax(self, clicker)
+                    else
+                        --add pax
+                        if clicker:get_player_control().sneak == true then
+                            --attach copilot
+                            ju52.attach_pax(self, clicker, true)
+                        else
+                            --attach normal passenger
+                            ju52.attach_pax(self, clicker)
+                        end
                     end
+
                 else
                     minetest.chat_send_player(clicker:get_player_name(), message)
                 end
