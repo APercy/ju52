@@ -48,7 +48,7 @@ end
 
 function ju52.control(self, dtime, hull_direction, longit_speed, longit_drag,
                             later_speed, later_drag, accel, player, is_flying)
-    if ju52.last_time_command > 2 then ju52.last_time_command = 2 end
+    if self._last_time_command > 2 then self._last_time_command = 2 end
     --if self.driver_name == nil then return end
     local retval_accel = accel
 
@@ -59,8 +59,8 @@ function ju52.control(self, dtime, hull_direction, longit_speed, longit_drag,
 	if player then
 		ctrl = player:get_player_control()
 
-        if ctrl.aux1 and ju52.last_time_command > 0.5 then
-            ju52.last_time_command = 0
+        if ctrl.aux1 and self._last_time_command > 0.5 then
+            self._last_time_command = 0
         end
 
         --engine and power control

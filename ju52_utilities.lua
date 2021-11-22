@@ -519,7 +519,7 @@ function ju52.flightstep(self)
     local velocity = self.object:get_velocity()
     local curr_pos = self.object:get_pos()
     
-    ju52.last_time_command = ju52.last_time_command + self.dtime
+    self._last_time_command = self._last_time_command + self.dtime
     local player = nil
     if self.driver_name then player = minetest.get_player_by_name(self.driver_name) end
 
@@ -559,16 +559,16 @@ function ju52.flightstep(self)
         ---------------------
         -- change the driver
         ---------------------
-        if passenger and ju52.last_time_command >= 1 and self._instruction_mode == true then
+        if passenger and self._last_time_command >= 1 and self._instruction_mode == true then
             if self._command_is_given == true then
                 if ctrl.sneak or ctrl.jump or ctrl.up or ctrl.down or ctrl.right or ctrl.left then
-                    ju52.last_time_command = 0
+                    self._last_time_command = 0
                     --take the control
                     ju52.transfer_control(self, false)
                 end
             else
                 if ctrl.sneak == true and ctrl.jump == true then
-                    ju52.last_time_command = 0
+                    self._last_time_command = 0
                     --trasnfer the control to student
                     ju52.transfer_control(self, true)
                 end
@@ -577,16 +577,16 @@ function ju52.flightstep(self)
         -----------
         --autopilot
         -----------
-        if self._instruction_mode == false and ju52.last_time_command >= 1 then
+        if self._instruction_mode == false and self._last_time_command >= 1 then
             if self._autopilot == true then
                 if ctrl.sneak or ctrl.jump or ctrl.up or ctrl.down or ctrl.right or ctrl.left then
-                    ju52.last_time_command = 0
+                    self._last_time_command = 0
                     self._autopilot = false
                     minetest.chat_send_player(self.driver_name," >>> Autopilot deactivated")
                 end
             else
                 if ctrl.sneak == true and ctrl.jump == true then
-                    ju52.last_time_command = 0
+                    self._last_time_command = 0
                     self._autopilot = true
                     self._auto_pilot_altitude = curr_pos.y
                     minetest.chat_send_player(self.driver_name,core.colorize('#00ff00', " >>> Autopilot on"))
@@ -596,8 +596,8 @@ function ju52.flightstep(self)
         ----------------------------------
         -- flap operation
         ----------------------------------
-        if ctrl.aux1 and ctrl.sneak and ju52.last_time_command >= 0.5 then
-            ju52.last_time_command = 0
+        if ctrl.aux1 and ctrl.sneak and self._last_time_command >= 0.3 then
+            self._last_time_command = 0
             ju52.flap_operate(self)
         end
     end

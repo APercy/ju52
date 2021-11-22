@@ -124,6 +124,7 @@ minetest.register_entity("ju52:ju52", {
     show_on_minimap = true,
     springiness = 0.5,
     physics = ju52.physics,
+    _last_time_command = 1,
     _command_is_given = false,
     _rudder_angle = 0,
     _acceleration = 0,
