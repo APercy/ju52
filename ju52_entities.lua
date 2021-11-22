@@ -344,43 +344,7 @@ minetest.register_entity("ju52:ju52", {
             end
             if can_access then
 	            if name == self.driver_name then
-                    --=========================
-                    --  dettach player
-                    --=========================
-                    -- eject passenger if the plane is on ground
-                    local touching_ground, liquid_below = ju52.check_node_below(self.object)
-                    if self.isinliquid or touching_ground then --isn't flying?
-                        --ok, remove pax
-                        local passenger = nil
-                        if self._passenger then
-                            passenger = minetest.get_player_by_name(self._passenger)
-                            if passenger then ju52.dettach_pax(self, passenger) end
-                        end
-                        for i = 10,1,-1 
-                        do 
-                            if self._passengers[i] then
-                                passenger = minetest.get_player_by_name(self._passengers[i])
-                                if passenger then
-                                    ju52.dettach_pax(self, passenger)
-                                    --minetest.chat_send_all('saiu')
-                                end
-                            end
-                        end
-                    else
-                        --give the control to the pax
-                        if self._passenger then
-                            self._autopilot = false
-                            ju52.transfer_control(self, true)
-                        end
-                    end
-                    self._instruction_mode = false
-                    ju52.dettachPlayer(self, clicker)
-                    --[[ sound and animation
-                    if self.sound_handle then
-                        minetest.sound_stop(self.sound_handle)
-                        self.sound_handle = nil
-                    end
-                    self.engine:set_animation_frame_speed(0)]]--
+                    ju52.pilot_formspec(name)
 	            elseif not self.driver_name then
                     --=========================
                     --  attach player
@@ -434,7 +398,8 @@ minetest.register_entity("ju52:ju52", {
 
                     if is_attached then
                         --remove pax
-                        ju52.dettach_pax(self, clicker)
+                        ju52.pax_formspec(name)
+                        --ju52.dettach_pax(self, clicker)
                     else
                         --add pax
                         if clicker:get_player_control().sneak == true then

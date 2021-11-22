@@ -249,6 +249,24 @@ function ju52.checkAttach(self, player)
     return false
 end
 
+function ju52.start_engine(self)
+    if self._engine_running then
+	    self._engine_running = false
+        -- sound and animation
+        if self.sound_handle then
+            minetest.sound_stop(self.sound_handle)
+            self.sound_handle = nil
+        end
+        self.engine:set_animation_frame_speed(0)
+        self._power_lever = 0 --zero power
+    elseif self._engine_running == false and self._energy > 0 then
+	    self._engine_running = true
+        -- sound and animation
+        ju52.engineSoundPlay(self)
+        self.engine:set_animation_frame_speed(60)
+    end
+end
+
 -- destroy the boat
 function ju52.destroy(self)
     if self._engine_running then
@@ -576,17 +594,11 @@ function ju52.flightstep(self)
             end
         end
         ----------------------------------
-        -- shows the hud for the player
+        -- flap operation
         ----------------------------------
-        if ctrl.up and ctrl.down and ju52.last_time_command >= 0.3 then
+        if ctrl.aux1 and ctrl.sneak and ju52.last_time_command >= 0.5 then
             ju52.last_time_command = 0
             ju52.flap_operate(self)
-            --[[
-            if self._show_hud == true then
-                self._show_hud = false
-            else
-                self._show_hud = true
-            end]]--
         end
     end
 

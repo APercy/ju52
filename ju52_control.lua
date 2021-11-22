@@ -59,26 +59,11 @@ function ju52.control(self, dtime, hull_direction, longit_speed, longit_drag,
 	if player then
 		ctrl = player:get_player_control()
 
-        --engine and power control
         if ctrl.aux1 and ju52.last_time_command > 0.5 then
             ju52.last_time_command = 0
-		    if self._engine_running then
-			    self._engine_running = false
-		        -- sound and animation
-                if self.sound_handle then
-                    minetest.sound_stop(self.sound_handle)
-                    self.sound_handle = nil
-                end
-		        self.engine:set_animation_frame_speed(0)
-                self._power_lever = 0 --zero power
-		    elseif self._engine_running == false and self._energy > 0 then
-			    self._engine_running = true
-	            -- sound and animation
-                ju52.engineSoundPlay(self)
-                self.engine:set_animation_frame_speed(60)
-		    end
         end
 
+        --engine and power control
         self._acceleration = 0
         if self._engine_running then
             --engine acceleration calc

@@ -14,6 +14,7 @@ dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_fuel_management.lua")
 dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_custom_physics.lua")
 dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_utilities.lua")
 dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_entities.lua")
+dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_forms.lua")
 
 --
 -- helpers and co.
