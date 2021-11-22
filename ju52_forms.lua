@@ -43,10 +43,10 @@ function ju52.pilot_formspec(name)
 end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
-    local name = player:get_player_name()
-    local plane_obj = ju52.getPlaneFromPlayer(player)
-    local ent = plane_obj:get_luaentity()
 	if formname == "ju52:passenger_main" then
+        local name = player:get_player_name()
+        local plane_obj = ju52.getPlaneFromPlayer(player)
+        local ent = plane_obj:get_luaentity()
 		if fields.new_seat then
             ju52.dettach_pax(ent, player)
             ju52.attach_pax(ent, player)
@@ -57,6 +57,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         minetest.close_formspec(name, "ju52:passenger_main")
 	end
     if formname == "ju52:pilot_main" then
+        local name = player:get_player_name()
+        local plane_obj = ju52.getPlaneFromPlayer(player)
+        local ent = plane_obj:get_luaentity()
 		if fields.turn_on then
             ju52.start_engine(ent)
 		end
