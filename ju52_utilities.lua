@@ -249,6 +249,40 @@ function ju52.checkAttach(self, player)
     return false
 end
 
+--painting
+function ju52.paint(object, colstr, search_string)
+    if colstr then
+        local entity = object:get_luaentity()
+        entity._color = colstr
+        entity._skin = ju52.skin_texture
+        local l_textures = ju52.textures_copy()
+        for _, texture in ipairs(l_textures) do
+            local indx = texture:find(search_string)
+            if indx then
+                l_textures[_] = search_string .."^[multiply:".. colstr
+            end
+        end
+        object:set_properties({textures=l_textures})
+    end
+end
+
+function ju52.set_skin(object, skin_image_name, search_string)
+    if skin_image_name then
+        local entity = object:get_luaentity()
+        entity._color = nil
+        entity._skin = skin_image_name
+        local l_textures = ju52.textures_copy()
+        for _, texture in ipairs(l_textures) do
+            local indx = texture:find(search_string)
+            if indx then
+                l_textures[_] = skin_image_name
+                --minetest.chat_send_all(l_textures[_])
+            end
+        end
+        object:set_properties({textures=l_textures})
+    end
+end
+
 function ju52.start_engine(self)
     if self._engine_running then
 	    self._engine_running = false

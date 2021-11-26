@@ -58,7 +58,14 @@ initial_properties = {
 	
 })
 
-ju52.skin_texture = "ju52_skin_war1.png"
+function ju52.textures_copy()
+    local tablecopy = {}
+    for k, v in pairs(ju52.textures) do
+      tablecopy[k] = v
+    end
+    return tablecopy
+end
+
 minetest.register_entity("ju52:ju52", {
 	initial_properties = {
 	    physical = true,
@@ -69,49 +76,7 @@ minetest.register_entity("ju52:ju52", {
         backface_culling = true,
 	    mesh = "ju52_mine.b3d",
         stepheight = 0.6,
-        textures = {
-                "ju52_metal.png", --bequilha
-                "ju52_brown.png", --assentos pilotos
-                "ju52_brown.png", --assentos passageiros
-                "ju52_brown.png", --assentos passageiros
-                "ju52_brown.png", --assentos passageiros
-                "ju52_brown.png", --assentos passageiros
-                "ju52_brown.png", --assentos passageiros
-                ju52.skin_texture, --proteção motor
-                "ju52_metal.png", "ju52_black.png", --escapamento
-                ju52.skin_texture, --superficies controle
-                "ju52_compass.png", --bussola
-                "ju52_white.png", --ponteiros
-                "ju52_metal.png", "ju52_black.png", --manetes potencia
-                ju52.skin_texture, --porta exterior
-                "ju52_glass.png", -- vidro porta
-                "ju52_bege.png", -- interno porta
-                "ju52_engine.png", "ju52_black.png", --motor
-                "ju52_engine.png", "ju52_black.png", --motores
-                ju52.skin_texture, --fuselagem
-                "ju52_black.png", -- aros mostradores
-                "ju52_climber.png", --climbers
-                "ju52_speed.png", --indicadores de velocidade
-                "ju52_altimeter.png", --altimetros
-                "ju52_fuel.png", --combustivel
-                "ju52_compass_ind.png", --indicador da bussola
-                "ju52_glass.png", -- vidros laterais
-                ju52.skin_texture, -- estabilizador horizontal
-                "ju52_bege.png", -- interior
-                "ju52_metal.png", "ju52_black.png", --assoalho
-                "ju52_metal.png", -- interno cabine - pes
-                "ju52_bege.png", -- interior cauda
-                ju52.skin_texture, --trem de pouso
-                "ju52_panel_color.png", "ju52_black.png", --painel
-                "ju52_panel_color.png", "ju52_black.png", --console de manetes
-                "ju52_black.png", "ju52_metal.png", --pneu da bequilha
-                ju52.skin_texture, --estabilizador vertical
-                "ju52_black.png", "ju52_metal.png", --pneus do trem principal
-                "ju52_glass.png", "ju52_metal.png", -- vidros parabrisa
-                ju52.skin_texture, --asas
-                --"ju52_red.png", --
-                --"ju52_white.png", --asas
-            },
+        textures = ju52.textures_copy(),
     },
     textures = {},
 	driver_name = nil,
@@ -141,6 +106,8 @@ minetest.register_entity("ju52:ju52", {
     _wing_configuration = ju52.wing_angle_of_attack,
     _passengers_base = {},
     _passengers = {},
+    _color = nil,
+    _skin = 'ju52_skin_lufthansa.png',
 
     get_staticdata = function(self) -- unloaded/unloads ... is now saved
         return minetest.serialize({
@@ -150,6 +117,8 @@ minetest.register_entity("ju52:ju52", {
             stored_power_lever = self._power_lever,
             stored_driver_name = self.driver_name,
             stored_flap = self._flap,
+            stored_color = self._color,
+            stored_skin = self._skin,
         })
     end,
 
@@ -163,6 +132,8 @@ minetest.register_entity("ju52:ju52", {
             self._power_lever = data.stored_power_lever
             self.driver_name = data.stored_driver_name
             self._flap = data.stored_flap
+            self._color = data.stored_color
+            self._skin = data.stored_skin
             --minetest.debug("loaded: ", self._energy)
         end
         ju52.setText(self)
@@ -216,6 +187,12 @@ minetest.register_entity("ju52:ju52", {
 
         self._passengers_base[10]=minetest.add_entity(pos,'ju52:seat_base')
         self._passengers_base[10]:set_attach(self.object,'',{x=6.5,y=6.7,z=-30.5},{x=0,y=0,z=0})
+
+        if self._color ~= nil then
+            ju52.paint(self.object, self._color, ju52.skin_texture)
+        else
+            ju52.set_skin(self.object, self._skin, ju52.skin_texture)
+        end
 
 		self.object:set_armor_groups({immortal=1})
 	end,
@@ -271,7 +248,11 @@ minetest.register_entity("ju52:ju52", {
 		end
         
         local is_attached = false
-        if puncher:get_attach() == self.object then is_attached = true end
+        local seat = puncher:get_attach()
+        if seat then
+            local plane = seat:get_attach()
+            if plane == self.object then is_attached = true end
+        end
 
         local itmstck=puncher:get_wielded_item()
         local item_name = ""
@@ -320,7 +301,13 @@ minetest.register_entity("ju52:ju52", {
             if self.hp_max <= 0 then
                 ju52.destroy(self)
             end
-
+        else
+		    local _,indx = item_name:find('dye:')
+            if indx and self._engine_running == false  then
+                ju52.paint_formspec(self.owner)
+                itmstck:set_count(itmstck:get_count()-1)
+			    puncher:set_wielded_item(itmstck)
+            end
         end
         
 	end,
@@ -359,11 +346,13 @@ minetest.register_entity("ju52:ju52", {
                         local passenger = minetest.get_player_by_name(self._passenger)
                         if passenger then ju52.dettach_pax(self, passenger) end
                     end
-                    for i = 10,1,-1 
+                    for i = 10,1,-1
                     do 
                         if self._passengers[i] then
-                            local passenger = minetest.get_player_by_name(self._passengers[i])
-                            if passenger then ju52.dettach_pax(self, passenger) end
+                            if self._passengers[i] then
+                                local passenger = minetest.get_player_by_name(self._passengers[i])
+                                if passenger then ju52.dettach_pax(self, passenger) end
+                            end
                         end
                     end
 
