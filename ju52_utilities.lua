@@ -687,10 +687,10 @@ function ju52.flightstep(self)
     local newpitch = math.rad(self._angle_of_attack) + speed_factor
 
     -- new yaw
-	if math.abs(self._rudder_angle)>5 then
-        local turn_rate = math.rad(14)
-        local yaw_turn = self.dtime * math.rad(self._rudder_angle) * turn_rate *
-                ju52.sign(longit_speed) * math.abs(longit_speed/2)
+	if math.abs(self._rudder_angle)>1 then
+        local turn_rate = math.rad(12)
+        local turn = math.rad(self._rudder_angle) * turn_rate
+        local yaw_turn = self.dtime * (turn * ju52.sign(longit_speed) * math.abs(longit_speed/2))
 		newyaw = yaw + yaw_turn
 	end
 
