@@ -521,8 +521,9 @@ function ju52.flap_off(self)
 
 end
 
-function ju52.flap_operate(self)
+function ju52.flap_operate(self, player_name)
     if self._flap == false then
+        minetest.chat_send_player(player_name, ">>> Flap down")
         self._flap = true
         ju52.flap_on(self)
         minetest.sound_play("ju52_collision", {
@@ -534,6 +535,7 @@ function ju52.flap_operate(self)
             pitch = 0.5,
         }, true)
     else
+        minetest.chat_send_player(player_name, ">>> Flap up")
         self._flap = false
         ju52.flap_off(self)
         minetest.sound_play("ju52_collision", {
@@ -632,7 +634,7 @@ function ju52.flightstep(self)
         ----------------------------------
         if ctrl.aux1 and ctrl.sneak and self._last_time_command >= 0.3 then
             self._last_time_command = 0
-            ju52.flap_operate(self)
+            ju52.flap_operate(self, self.driver_name)
         end
     end
 
