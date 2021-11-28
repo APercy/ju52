@@ -132,6 +132,15 @@ function ju52.control(self, dtime, hull_direction, longit_speed, longit_drag,
             self._elevator_angle = 0
             self._rudder_angle = 0
         end
+
+        ----------------------------------
+        -- flap operation
+        ----------------------------------
+        if ctrl.aux1 and ctrl.sneak and self._last_time_command >= 0.3 then
+            self._last_time_command = 0
+            ju52.flap_operate(self, player)
+        end
+
 	end
 
     if longit_speed > 0 then

@@ -356,15 +356,7 @@ minetest.register_entity("ju52:ju52", {
                         end
                     end
 
-		            if clicker:get_player_control().sneak == true then
-                        -- flight instructor mode
-                        self._instruction_mode = true
-                        ju52.attach(self, clicker, true)
-                    else
-                        -- no driver => clicker is new driver
-                        self._instruction_mode = false
-                        ju52.attach(self, clicker)
-                    end
+                    ju52.attach(self, clicker)
                     self._command_is_given = false
 	            end
             else

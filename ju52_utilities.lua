@@ -78,19 +78,13 @@ function ju52.get_gauge_angle(value, initial_angle)
 end
 
 -- attach player
-function ju52.attach(self, player, instructor_mode)
-    instructor_mode = instructor_mode or false
+function ju52.attach(self, player)
     local name = player:get_player_name()
     self.driver_name = name
 
     -- attach the driver
-    if instructor_mode == true then
-        player:set_attach(self.co_pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-        player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 1, z = -30})
-    else
-        player:set_attach(self.pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-        player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 1, z = -30})
-    end
+    player:set_attach(self.pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+    player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 1, z = -30})
     player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 1, z = -30})
     player_api.player_attached[name] = true
     -- make the driver sit
@@ -159,13 +153,8 @@ function ju52.attach_pax(self, player, is_copilot)
             self._passenger = name
 
             -- attach the driver
-            if self._instruction_mode == true then
-                player:set_attach(self.pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-                player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 3, z = -30})
-            else
-                player:set_attach(self.co_pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-                player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 3, z = -30})
-            end
+            player:set_attach(self.co_pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+            player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 3, z = -30})
             player_api.player_attached[name] = true
             -- make the driver sit
             minetest.after(0.2, function()
@@ -463,10 +452,15 @@ function ju52.checkattachBug(self)
         local player = minetest.get_player_by_name(self.owner)
         if player then
 		    if player:get_hp() > 0 then
-                ju52.attach(self, player, self._instruction_mode)
+                ju52.attach(self, player)
             else
                 ju52.dettachPlayer(self, player)
 		    end
+        else
+            if self._passenger ~= nil and self._command_is_given == false then
+                self._autopilot = false
+                ju52.transfer_control(self, true)
+            end
         end
     end
 end
@@ -521,13 +515,12 @@ function ju52.flap_off(self)
 
 end
 
-function ju52.flap_operate(self, player_name)
+function ju52.flap_operate(self, player)
     if self._flap == false then
-        minetest.chat_send_player(player_name, ">>> Flap down")
+        minetest.chat_send_player(player:get_player_name(), ">>> Flap down")
         self._flap = true
         ju52.flap_on(self)
         minetest.sound_play("ju52_collision", {
-            --to_player = self.driver_name,
             object = self.object,
             max_hear_distance = 15,
             gain = 1.0,
@@ -535,11 +528,10 @@ function ju52.flap_operate(self, player_name)
             pitch = 0.5,
         }, true)
     else
-        minetest.chat_send_player(player_name, ">>> Flap up")
+        minetest.chat_send_player(player:get_player_name(), ">>> Flap up")
         self._flap = false
         ju52.flap_off(self)
         minetest.sound_play("ju52_collision", {
-            --to_player = self.driver_name,
             object = self.object,
             max_hear_distance = 15,
             gain = 1.0,
@@ -558,6 +550,8 @@ function ju52.flightstep(self)
     self._last_time_command = self._last_time_command + self.dtime
     local player = nil
     if self.driver_name then player = minetest.get_player_by_name(self.driver_name) end
+    local passenger = nil
+    if self._passenger then passenger = minetest.get_player_by_name(self._passenger) end
 
     if player then
         local ctrl = player:get_player_control()
@@ -595,7 +589,7 @@ function ju52.flightstep(self)
         ---------------------
         -- change the driver
         ---------------------
-        if passenger and self._last_time_command >= 1 and self._instruction_mode == true then
+        if passenger and self._last_time_command >= 1 then
             if self._command_is_given == true then
                 if ctrl.sneak or ctrl.jump or ctrl.up or ctrl.down or ctrl.right or ctrl.left then
                     self._last_time_command = 0
@@ -613,7 +607,7 @@ function ju52.flightstep(self)
         -----------
         --autopilot
         -----------
-        if self._instruction_mode == false and self._last_time_command >= 1 then
+        if self._last_time_command >= 1 then
             if self._autopilot == true then
                 if ctrl.sneak or ctrl.jump or ctrl.up or ctrl.down or ctrl.right or ctrl.left then
                     self._last_time_command = 0
@@ -628,13 +622,6 @@ function ju52.flightstep(self)
                     minetest.chat_send_player(self.driver_name,core.colorize('#00ff00', " >>> Autopilot on"))
                 end
             end
-        end
-        ----------------------------------
-        -- flap operation
-        ----------------------------------
-        if ctrl.aux1 and ctrl.sneak and self._last_time_command >= 0.3 then
-            self._last_time_command = 0
-            ju52.flap_operate(self, self.driver_name)
         end
     end
 
