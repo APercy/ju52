@@ -169,7 +169,7 @@ function ju52.set_pitch(self, dir, dtime)
 end
 
 function ju52.set_yaw(self, dir, dtime)
-    local yaw_factor = 4
+    local yaw_factor = 5
 	if dir == 1 then
 		self._rudder_angle = math.max(self._rudder_angle-yaw_factor*dtime,-ju52.rudder_limit)
 	elseif dir == -1 then
