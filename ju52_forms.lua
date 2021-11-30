@@ -133,7 +133,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             --
 		end
 		if fields.pass_control then
-            --
+            if ent._command_is_given == true then
+				--take the control
+				ju52.transfer_control(ent, false)
+            else
+				--trasnfer the control to student
+				ju52.transfer_control(ent, true)
+            end
 		end
 		if fields.open_door then
             --
