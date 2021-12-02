@@ -101,8 +101,6 @@ function ju52.dettachPlayer(self, player)
     local name = self.driver_name
     ju52.setText(self)
 
-    ju52.remove_hud(player)
-
     --self._engine_running = false
 
     -- driver clicked the object => driver gets off the vehicle
@@ -119,10 +117,14 @@ function ju52.dettachPlayer(self, player)
     end
 
     -- detach the player
-    player:set_detach()
-    player_api.player_attached[name] = nil
-    player:set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})
-    player_api.set_animation(player, "stand")
+    if player then
+        ju52.remove_hud(player)
+
+        player:set_detach()
+        player_api.player_attached[name] = nil
+        player:set_eye_offset({x=0,y=0,z=0},{x=0,y=0,z=0})
+        player_api.set_animation(player, "stand")
+    end
     self.driver = nil
     --remove_physics_override(player, {speed=1,gravity=1,jump=1})
 end
