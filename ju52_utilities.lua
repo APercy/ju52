@@ -806,16 +806,18 @@ function ju52.flightstep(self)
     local tail_lift_min_speed = 4
     local tail_lift_max_speed = 8
     local tail_angle = 17.4
-    if math.abs(longit_speed) > tail_lift_min_speed and math.abs(longit_speed) < tail_lift_max_speed then
-        --minetest.chat_send_all(math.abs(longit_speed))
-        local speed_range = tail_lift_max_speed - tail_lift_min_speed
-        percentage = 1-((math.abs(longit_speed) - tail_lift_min_speed)/speed_range)
-        if percentage > 1 then percentage = 1 end
-        if percentage < 0 then percentage = 0 end
-        local angle = tail_angle * percentage
-        local calculated_newpitch = math.rad(angle)
-        if newpitch < calculated_newpitch then newpitch = calculated_newpitch end --ja aproveita o pitch atual se ja estiver cerrto
-        if newpitch > math.rad(tail_angle) then newpitch = math.rad(tail_angle) end --não queremos arrastar o cauda no chão
+    if math.abs(longit_speed) > tail_lift_min_speed then
+        if math.abs(longit_speed) < tail_lift_max_speed then
+            --minetest.chat_send_all(math.abs(longit_speed))
+            local speed_range = tail_lift_max_speed - tail_lift_min_speed
+            percentage = 1-((math.abs(longit_speed) - tail_lift_min_speed)/speed_range)
+            if percentage > 1 then percentage = 1 end
+            if percentage < 0 then percentage = 0 end
+            local angle = tail_angle * percentage
+            local calculated_newpitch = math.rad(angle)
+            if newpitch < calculated_newpitch then newpitch = calculated_newpitch end --ja aproveita o pitch atual se ja estiver cerrto
+            if newpitch > math.rad(tail_angle) then newpitch = math.rad(tail_angle) end --não queremos arrastar o cauda no chão
+        end
     else
         if math.abs(longit_speed) < tail_lift_min_speed then newpitch = math.rad(tail_angle) end
     end
