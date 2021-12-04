@@ -159,7 +159,7 @@ function ju52.control(self, dtime, hull_direction, longit_speed, longit_drag,
 end
 
 function ju52.set_pitch(self, dir, dtime)
-    local pitch_factor = 5
+    local pitch_factor = 7
 	if dir == -1 then
 		self._elevator_angle = math.max(self._elevator_angle-pitch_factor*dtime,-ju52.elevator_limit)
 	elseif dir == 1 then
@@ -169,7 +169,7 @@ function ju52.set_pitch(self, dir, dtime)
 end
 
 function ju52.set_yaw(self, dir, dtime)
-    local yaw_factor = 6
+    local yaw_factor = 7
 	if dir == 1 then
 		self._rudder_angle = math.max(self._rudder_angle-yaw_factor*dtime,-ju52.rudder_limit)
 	elseif dir == -1 then

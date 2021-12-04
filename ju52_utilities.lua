@@ -378,7 +378,7 @@ function ju52.testImpact(self, velocity, position)
     local collision = false
     if self._last_vel == nil then return end
     --lets calculate the vertical speed, to avoid the bug on colliding on floor with hard lag
-    if abs(velocity.y - self._last_vel.y) > 3 then
+    if abs(velocity.y - self._last_vel.y) > 4 then
 		local noded = mobkit.nodeatpos(mobkit.pos_shift(p,{y=-2.8}))
 	    if (noded and noded.drawtype ~= 'airlike') then
 		    collision = true
@@ -803,8 +803,8 @@ function ju52.flightstep(self)
     end
 
     -- adjust pitch at ground
-    local tail_lift_min_speed = 4
-    local tail_lift_max_speed = 8
+    local tail_lift_min_speed = 3
+    local tail_lift_max_speed = 12
     local tail_angle = 17.4
     if math.abs(longit_speed) > tail_lift_min_speed then
         if math.abs(longit_speed) < tail_lift_max_speed then
