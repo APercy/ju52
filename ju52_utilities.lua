@@ -331,7 +331,7 @@ function ju52.destroy(self)
     self.object:remove()
 
     pos.y=pos.y+2
-    minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'demoiselle:wings')
+    minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'ju52:wings')
 
     for i=1,6 do
 	    minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:steel_ingot')
@@ -345,7 +345,7 @@ function ju52.destroy(self)
 	    minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'default:mese_crystal')
     end
 
-    --minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'demoiselle:demoiselle')
+    --minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'ju52:ju52')
 end
 
 function ju52.check_node_below(obj)
@@ -368,7 +368,7 @@ function ju52.setText(self)
        "%.2f", self.hp_max
     )
     if properties then
-        properties.infotext = "Nice demoiselle of " .. self.owner .. ". Current hp: " .. formatted
+        properties.infotext = "Nice Ju52 of " .. self.owner .. ". Current hp: " .. formatted
         self.object:set_properties(properties)
     end
 end
