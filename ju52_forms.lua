@@ -6,7 +6,10 @@ dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_global_definitions.lua
 
 function ju52.getPlaneFromPlayer(player)
     local seat = player:get_attach()
-    local plane = seat:get_attach()
+    local plane = nil
+    if seat then
+        plane = seat:get_attach()
+    end
     return plane
 end
 
@@ -75,6 +78,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname == "ju52:paint" then
         local name = player:get_player_name()
         local plane_obj = ju52.getPlaneFromPlayer(player)
+        if plane_obj == nil then
+            minetest.close_formspec(name, "ju52:paint")
+            return
+        end
         local ent = plane_obj:get_luaentity()
         
         ent.initial_properties.textures = ju52.textures_copy() --reset the textures first
@@ -105,6 +112,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname == "ju52:passenger_main" then
         local name = player:get_player_name()
         local plane_obj = ju52.getPlaneFromPlayer(player)
+        if plane_obj == nil then
+            minetest.close_formspec(name, "ju52:passenger_main")
+            return
+        end
         local ent = plane_obj:get_luaentity()
 		if fields.new_seat then
             ju52.dettach_pax(ent, player)
@@ -118,6 +129,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
     if formname == "ju52:pilot_main" then
         local name = player:get_player_name()
         local plane_obj = ju52.getPlaneFromPlayer(player)
+        if plane_obj == nil then
+            minetest.close_formspec(name, "ju52:pilot_main")
+            return
+        end
         local ent = plane_obj:get_luaentity()
 		if fields.turn_on then
             ju52.start_engine(ent)

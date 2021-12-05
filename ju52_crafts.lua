@@ -1,18 +1,18 @@
 -- wing
 minetest.register_craftitem("ju52:wings",{
-	description = "Demoiselle wings",
-	inventory_image = "demoiselle_wings.png",
+	description = "Ju52 wings",
+	inventory_image = "ju52_wings.png",
 })
 -- fuselage
 minetest.register_craftitem("ju52:body",{
-	description = "Demoiselle body",
-	inventory_image = "demoiselle_body.png",
+	description = "Ju52 body",
+	inventory_image = "ju52_body.png",
 })
 
 -- trike
 minetest.register_craftitem("ju52:ju52", {
 	description = "Ju 52",
-	inventory_image = "demoiselle.png",
+	inventory_image = "ju52.png",
     liquids_pointable = true,
 
 	on_place = function(itemstack, placer, pointed_thing)
