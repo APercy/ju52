@@ -161,10 +161,10 @@ end
 function ju52.set_pitch(self, dir, dtime)
     local pitch_factor = 7
 	if dir == -1 then
-		self._elevator_angle = math.max(self._elevator_angle-pitch_factor*dtime,-ju52.elevator_limit)
+		self._elevator_angle = math.max(self._elevator_angle-(pitch_factor*dtime),-ju52.elevator_limit)
 	elseif dir == 1 then
         if self._angle_of_attack < 0 then pitch_factor = 1 end --lets reduce the command power to avoid accidents
-		self._elevator_angle = math.min(self._elevator_angle+pitch_factor*dtime,ju52.elevator_limit)
+		self._elevator_angle = math.min(self._elevator_angle+(pitch_factor*dtime),ju52.elevator_limit)
 	end
 end
 
