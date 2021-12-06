@@ -169,11 +169,16 @@ function ju52.set_pitch(self, dir, dtime)
 end
 
 function ju52.set_yaw(self, dir, dtime)
+    local turn_factor = 1 --normal turn
+    local correction_factor = 2 --index used when the turn is currently in opposite of desired direction
+
     local yaw_factor = 7
 	if dir == 1 then
-		self._rudder_angle = math.max(self._rudder_angle-yaw_factor*dtime,-ju52.rudder_limit)
+        if self._rudder_angle > 0 then turn_factor = correction_factor end
+		self._rudder_angle = math.max(self._rudder_angle-(yaw_factor*dtime*turn_factor),-ju52.rudder_limit)
 	elseif dir == -1 then
-		self._rudder_angle = math.min(self._rudder_angle+yaw_factor*dtime,ju52.rudder_limit)
+        if self._rudder_angle < 0 then turn_factor = correction_factor end
+		self._rudder_angle = math.min(self._rudder_angle+(yaw_factor*dtime*turn_factor),ju52.rudder_limit)
 	end
 end
 
