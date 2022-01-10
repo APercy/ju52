@@ -324,7 +324,7 @@ minetest.register_entity("ju52:ju52", {
         end
 
         --check if is the owner
-        if self.owner == name then
+        if self.owner == name or minetest.check_player_privs(clicker, {protection_bypass=true}) then
             -- pilot section
             local can_access = true
             if ju52.restricted == "true" then
