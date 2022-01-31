@@ -167,7 +167,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             --  dettach player
             --=========================
             -- eject passenger if the plane is on ground
-            local touching_ground, liquid_below = ju52.check_node_below(plane_obj)
+            local touching_ground, liquid_below = airutils.check_node_below(plane_obj, 2.5)
             if ent.isinliquid or touching_ground then --isn't flying?
                 --ok, remove pax
                 local passenger = nil

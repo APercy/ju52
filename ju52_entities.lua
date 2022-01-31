@@ -323,82 +323,111 @@ minetest.register_entity("ju52:ju52", {
             self.owner = name
         end
 
-        --check if is the owner
-        if self.owner == name or minetest.check_player_privs(clicker, {protection_bypass=true}) then
-            -- pilot section
-            local can_access = true
-            if ju52.restricted == "true" then
-                can_access = minetest.check_player_privs(clicker, {flight_licence=true})
-            end
-            if can_access then
-	            if name == self.driver_name then
-                    ju52.pilot_formspec(name)
-	            elseif not self.driver_name then
-                    --=========================
-                    --  attach player
-                    --=========================
-                    --attach player
-                    local is_under_water = airutils.check_is_under_water(self.object)
-                    if is_under_water then return end
+        local passenger_name = nil
+        if self._passenger then
+            passenger_name = self._passenger
+        end
 
-                    --remove pax to prevent bug
-                    if self._passenger then
-                        local passenger = minetest.get_player_by_name(self._passenger)
-                        if passenger then ju52.dettach_pax(self, passenger) end
-                    end
-                    for i = 10,1,-1
-                    do 
-                        if self._passengers[i] then
-                            if self._passengers[i] then
-                                local passenger = minetest.get_player_by_name(self._passengers[i])
-                                if passenger then ju52.dettach_pax(self, passenger) end
-                            end
-                        end
-                    end
+        local touching_ground, liquid_below = airutils.check_node_below(self.object, 2.5)
+        local is_on_ground = self.isinliquid or touching_ground or liquid_below
+        local is_under_water = airutils.check_is_under_water(self.object)
 
-                    ju52.attach(self, clicker)
-                    self._command_is_given = false
-	            end
+        --minetest.chat_send_all('name '.. dump(name) .. ' - pilot: ' .. dump(self.driver_name) .. ' - pax: ' .. dump(passenger_name))
+        --=========================
+        --  form to pilot
+        --=========================
+        local is_attached = false
+        local seat = clicker:get_attach()
+        if seat then
+            local plane = seat:get_attach()
+            if plane == self.object then is_attached = true end
+        end
+        if name == self.driver_name then
+            if is_attached then
+                ju52.pilot_formspec(name)
             else
-                minetest.show_formspec(name, "ju52:flightlicence",
-                    "size[4,2]" ..
-                    "label[0.0,0.0;Sorry ...]"..
-                    "label[0.0,0.7;You need a flight licence to fly it.]" ..
-                    "label[0.0,1.0;You must obtain it from server admin.]" ..
-                    "button_exit[1.5,1.9;0.9,0.1;e;Exit]")
+                self.driver_name = nil
             end
-            -- end pilot section
-        else
-            --passenger section
-            --only can enter when the pilot is inside
-            local message = core.colorize('#ff0000', " >>> You aren't the owner of this airplane.")
-            if self.driver_name ~= nil or self._autoflymode == true then
-                local player = minetest.get_player_by_name(self.driver_name)
-                if player then
+        --=========================
+        --  detach passenger
+        --=========================
+        elseif name == passenger_name then
+            if is_on_ground or clicker:get_player_control().sneak then
+                ju52.dettach_pax(self, clicker)
+            else
+                minetest.chat_send_player(name, "Hold sneak and right-click to disembark while flying")
+            end
 
-                    local is_attached = ju52.check_passenger_is_attached(self, name)
+        --=========================
+        --  attach pilot
+        --=========================
+        elseif not self.driver_name then
+            if self.owner == name or minetest.check_player_privs(clicker, {protection_bypass=true}) then
+                if ju52.restricted == "true" and not minetest.check_player_privs(clicker, {flight_licence=true}) then
+                    minetest.show_formspec(name, "ju52:flightlicence",
+                        "size[4,2]" ..
+                        "label[0.0,0.0;Sorry ...]"..
+                        "label[0.0,0.7;You need a flight licence to fly it.]" ..
+                        "label[0.0,1.0;You must obtain it from server admin.]" ..
+                        "button_exit[1.5,1.9;0.9,0.1;e;Exit]")
+                    return
+                end
 
-                    if is_attached then
-                        --remove pax
-                        ju52.pax_formspec(name)
-                        --ju52.dettach_pax(self, clicker)
-                    else
-                        --add pax
-                        if clicker:get_player_control().sneak == true then
-                            --attach copilot
-                            ju52.attach_pax(self, clicker, true)
-                        else
-                            --attach normal passenger
-                            ju52.attach_pax(self, clicker)
+                if is_under_water then return end
+                --remove pax to prevent bug
+                if self._passenger then 
+                    local pax_obj = minetest.get_player_by_name(self._passenger)
+                    ju52.dettach_pax(self, pax_obj)
+                end
+                for i = 10,1,-1
+                do 
+                    if self._passengers[i] then
+                        if self._passengers[i] then
+                            local passenger = minetest.get_player_by_name(self._passengers[i])
+                            if passenger then ju52.dettach_pax(self, passenger) end
                         end
                     end
-
-                else
-                    minetest.chat_send_player(clicker:get_player_name(), message)
                 end
+
+                --attach player
+                -- no driver => clicker is new driver
+                ju52.attach(self, clicker)
+                self._command_is_given = false
+            else
+                ju52.dettach_pax(self, clicker)
+                minetest.chat_send_player(name, core.colorize('#ff0000', " >>> You aren't the owner of this Ju 52."))
+            end
+
+        --=========================
+        --  attach passenger
+        --=========================
+        elseif self.driver_name ~= nil or self._autoflymode == true then
+            local player = minetest.get_player_by_name(self.driver_name)
+            if player then
+
+                is_attached = ju52.check_passenger_is_attached(self, name)
+
+                if is_attached then
+                    --remove pax
+                    ju52.pax_formspec(name)
+                    --ju52.dettach_pax(self, clicker)
+                else
+                    --add pax
+                    if clicker:get_player_control().sneak == true then
+                        --attach copilot
+                        ju52.attach_pax(self, clicker, true)
+                    else
+                        --attach normal passenger
+                        ju52.attach_pax(self, clicker)
+                    end
+                end
+
             else
                 minetest.chat_send_player(clicker:get_player_name(), message)
             end
+        else
+            minetest.chat_send_player(clicker:get_player_name(), message)
         end
+
 	end,
 })

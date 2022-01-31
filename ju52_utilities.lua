@@ -307,20 +307,6 @@ function ju52.destroy(self)
     --minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'ju52:ju52')
 end
 
-function ju52.check_node_below(obj)
-    local pos_below = obj:get_pos()
-    if pos_below then
-        pos_below.y = pos_below.y - 2.5
-        local node_below = minetest.get_node(pos_below).name
-        local nodedef = minetest.registered_nodes[node_below]
-        local touching_ground = not nodedef or -- unknown nodes are solid
-		        nodedef.walkable or false
-        local liquid_below = not touching_ground and nodedef.liquidtype ~= "none"
-        return touching_ground, liquid_below
-    end
-    return nil, nil
-end
-
 function ju52.testImpact(self, velocity, position)
     local p = position --self.object:get_pos()
     local collision = false
