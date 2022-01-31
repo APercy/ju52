@@ -77,6 +77,26 @@ function ju52.get_gauge_angle(value, initial_angle)
 	return angle
 end
 
+
+--returns 0 for old, 1 for new
+function ju52.detect_player_api(player)
+    local player_proterties = player:get_properties()
+    local mesh = "character.b3d"
+    if player_proterties.mesh == mesh then
+        local models = player_api.registered_models
+        local character = models[mesh]
+        if character then
+            if character.animations.sit.eye_height then
+                return 1
+            else
+                return 0
+            end
+        end
+    end
+
+    return 0
+end
+
 -- attach player
 function ju52.attach(self, player)
     local name = player:get_player_name()
@@ -84,8 +104,11 @@ function ju52.attach(self, player)
 
     -- attach the driver
     player:set_attach(self.pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-    player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 1, z = -30})
-    player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 1, z = -30})
+    local eye_y = -4
+    if ju52.detect_player_api(player) == 1 then
+        eye_y = 2.5
+    end
+    player:set_eye_offset({x = 0, y = eye_y, z = 2}, {x = 0, y = 3, z = -30})
     player_api.player_attached[name] = true
     -- make the driver sit
     minetest.after(0.2, function()
@@ -150,13 +173,18 @@ function ju52.attach_pax(self, player, is_copilot)
     local is_copilot = is_copilot or false
     local name = player:get_player_name()
 
+    local eye_y = -4
+    if ju52.detect_player_api(player) == 1 then
+        eye_y = 2.5
+    end
+
     if is_copilot == true then
         if self._passenger == nil then
             self._passenger = name
 
             -- attach the driver
             player:set_attach(self.co_pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-            player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 3, z = -30})
+            player:set_eye_offset({x = 0, y = eye_y, z = 2}, {x = 0, y = 3, z = -30})
             player_api.player_attached[name] = true
             -- make the driver sit
             minetest.after(0.2, function()
@@ -184,9 +212,9 @@ function ju52.attach_pax(self, player, is_copilot)
                 self._passengers[i] = name
                 player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
                 if i > 2 then
-                    player:set_eye_offset({x = 0, y = -4, z = 2}, {x = 0, y = 3, z = -30})
+                    player:set_eye_offset({x = 0, y = eye_y, z = 2}, {x = 0, y = 3, z = -30})
                 else
-                    player:set_eye_offset({x = 0, y = -4, z = 0}, {x = 0, y = 3, z = -30})
+                    player:set_eye_offset({x = 0, y = eye_y, z = 0}, {x = 0, y = 3, z = -30})
                 end
                 player_api.player_attached[name] = true
                 -- make the driver sit
