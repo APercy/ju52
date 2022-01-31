@@ -136,7 +136,7 @@ minetest.register_entity("ju52:ju52", {
             self._skin = data.stored_skin
             --minetest.debug("loaded: ", self._energy)
         end
-        ju52.setText(self)
+        airutils.setText(self, "Ju 52")
         self.object:set_animation({x = 1, y = 12}, 0, 0, true)
 
         local pos = self.object:get_pos()
@@ -274,7 +274,7 @@ minetest.register_entity("ju52:ju52", {
                         inv:remove_item("main", stack)
                         self.hp_max = self.hp_max + 10
                         if self.hp_max > 50 then self.hp_max = 50 end
-                        ju52.setText(self)
+                        airutils.setText(self, "Ju 52")
                     else
                         minetest.chat_send_player(puncher:get_player_name(), "You need steel ingots in your inventory to perform this repair.")
                     end
@@ -294,7 +294,7 @@ minetest.register_entity("ju52:ju52", {
                         fade = 0.0,
                         pitch = 1.0,
                     })
-                    ju52.setText(self)
+                    airutils.setText(self, "Ju 52")
 		        end
             end
 
@@ -338,7 +338,7 @@ minetest.register_entity("ju52:ju52", {
                     --  attach player
                     --=========================
                     --attach player
-                    local is_under_water = ju52.check_is_under_water(self.object)
+                    local is_under_water = airutils.check_is_under_water(self.object)
                     if is_under_water then return end
 
                     --remove pax to prevent bug
