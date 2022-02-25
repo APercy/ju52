@@ -671,7 +671,7 @@ function ju52.flightstep(self)
 
     local new_accel = accel
     if longit_speed > ju52.min_speed / 2 then
-        new_accel = airutils.getLiftAccel(self, velocity, new_accel, longit_speed, roll, curr_pos, ju52.lift, 20000)
+        new_accel = airutils.getLiftAccel(self, velocity, new_accel, longit_speed, roll, curr_pos, ju52.lift, 20000, 25)
     end
     -- end lift
 
