@@ -313,6 +313,7 @@ minetest.register_entity("ju52:ju52", {
 	end,
 
 	on_rightclick = function(self, clicker)
+        local message = ""
 		if not clicker or not clicker:is_player() then
 			return
 		end
