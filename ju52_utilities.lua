@@ -287,6 +287,7 @@ function ju52.destroy(self)
 
     if self.stick then self.stick:remove() end
 
+    airutils.destroy_inventory(self)
     self.object:remove()
 
     pos.y=pos.y+2

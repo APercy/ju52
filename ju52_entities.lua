@@ -108,6 +108,8 @@ minetest.register_entity("ju52:ju52", {
     _passengers = {},
     _color = nil,
     _skin = 'ju52_skin_lufthansa.png',
+    _inv = nil,
+    _inv_id = "",
 
     get_staticdata = function(self) -- unloaded/unloads ... is now saved
         return minetest.serialize({
@@ -119,8 +121,13 @@ minetest.register_entity("ju52:ju52", {
             stored_flap = self._flap,
             stored_color = self._color,
             stored_skin = self._skin,
+            stored_inv_id = self._inv_id,
         })
     end,
+
+	on_deactivate = function(self)
+        airutils.save_inventory(self)
+	end,
 
 	on_activate = function(self, staticdata, dtime_s)
         mobkit.actfunc(self, staticdata, dtime_s)
@@ -134,6 +141,7 @@ minetest.register_entity("ju52:ju52", {
             self._flap = data.stored_flap
             self._color = data.stored_color
             self._skin = data.stored_skin
+            self._inv_id = data.stored_inv_id
             --minetest.debug("loaded: ", self._energy)
         end
         airutils.setText(self, "Ju 52")
@@ -195,6 +203,14 @@ minetest.register_entity("ju52:ju52", {
         end
 
 		self.object:set_armor_groups({immortal=1})
+
+		local inv = minetest.get_inventory({type = "detached", name = self._inv_id})
+		-- if the game was closed the inventories have to be made anew, instead of just reattached
+		if not inv then
+            airutils.create_inventory(self, ju52.trunk_slots)
+		else
+		    self.inv = inv
+        end
 	end,
 
     --on_step = mobkit.stepfunc,
@@ -283,11 +299,11 @@ minetest.register_entity("ju52:ju52", {
             else
                 -- deal with painting or destroying
 		        if not self.driver and toolcaps and toolcaps.damage_groups
-                        and toolcaps.damage_groups.fleshy and item_name ~= ju52.fuel then
+                        and toolcaps.damage_groups.fleshy and item_name ~= airutils.fuel then
 			        --mobkit.hurt(self,toolcaps.damage_groups.fleshy - 1)
 			        --mobkit.make_sound(self,'hit')
                     self.hp_max = self.hp_max - 10
-                    minetest.sound_play("collision", {
+                    minetest.sound_play("ju52_collision", {
                         object = self.object,
                         max_hear_distance = 5,
                         gain = 1.0,
@@ -364,36 +380,40 @@ minetest.register_entity("ju52:ju52", {
         --=========================
         elseif not self.driver_name then
             if self.owner == name or minetest.check_player_privs(clicker, {protection_bypass=true}) then
-                if ju52.restricted == "true" and not minetest.check_player_privs(clicker, {flight_licence=true}) then
-                    minetest.show_formspec(name, "ju52:flightlicence",
-                        "size[4,2]" ..
-                        "label[0.0,0.0;Sorry ...]"..
-                        "label[0.0,0.7;You need a flight licence to fly it.]" ..
-                        "label[0.0,1.0;You must obtain it from server admin.]" ..
-                        "button_exit[1.5,1.9;0.9,0.1;e;Exit]")
-                    return
-                end
+                if clicker:get_player_control().aux1 == true then --lets see the inventory
+                    airutils.show_vehicle_trunk_formspec(self, clicker, ju52.trunk_slots)
+                else
+                    if ju52.restricted == "true" and not minetest.check_player_privs(clicker, {flight_licence=true}) then
+                        minetest.show_formspec(name, "ju52:flightlicence",
+                            "size[4,2]" ..
+                            "label[0.0,0.0;Sorry ...]"..
+                            "label[0.0,0.7;You need a flight licence to fly it.]" ..
+                            "label[0.0,1.0;You must obtain it from server admin.]" ..
+                            "button_exit[1.5,1.9;0.9,0.1;e;Exit]")
+                        return
+                    end
 
-                if is_under_water then return end
-                --remove pax to prevent bug
-                if self._passenger then 
-                    local pax_obj = minetest.get_player_by_name(self._passenger)
-                    ju52.dettach_pax(self, pax_obj)
-                end
-                for i = 10,1,-1
-                do 
-                    if self._passengers[i] then
+                    if is_under_water then return end
+                    --remove pax to prevent bug
+                    if self._passenger then 
+                        local pax_obj = minetest.get_player_by_name(self._passenger)
+                        ju52.dettach_pax(self, pax_obj)
+                    end
+                    for i = 10,1,-1
+                    do 
                         if self._passengers[i] then
-                            local passenger = minetest.get_player_by_name(self._passengers[i])
-                            if passenger then ju52.dettach_pax(self, passenger) end
+                            if self._passengers[i] then
+                                local passenger = minetest.get_player_by_name(self._passengers[i])
+                                if passenger then ju52.dettach_pax(self, passenger) end
+                            end
                         end
                     end
-                end
 
-                --attach player
-                -- no driver => clicker is new driver
-                ju52.attach(self, clicker)
-                self._command_is_given = false
+                    --attach player
+                    -- no driver => clicker is new driver
+                    ju52.attach(self, clicker)
+                    self._command_is_given = false
+                end
             else
                 ju52.dettach_pax(self, clicker)
                 minetest.chat_send_player(name, core.colorize('#ff0000', " >>> You aren't the owner of this Ju 52."))

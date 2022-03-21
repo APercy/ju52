@@ -17,7 +17,7 @@ function ju52.loadFuel(self, player_name)
     local item_name = ""
     if itmstck then item_name = itmstck:get_name() end
 
-    local fuel = ju52.contains(ju52.fuel, item_name)
+    local fuel = ju52.contains(airutils.fuel, item_name)
     if fuel then
         local stack = ItemStack(item_name .. " 1")
 
