@@ -48,29 +48,14 @@ end
 function ju52.paint_formspec(name)
     local basic_form = table.concat({
         "formspec_version[3]",
-        "size[8.1, 11.8]",
+        "size[4.0, 4.2]",
     },"")
 
-    basic_form = basic_form.."image_button[1,1.0;3,1;ju52_p_lufthansa.png;lufthansa;Lufthansa;false;true;]"
-    basic_form = basic_form.."image_button[1,2.1;3,1;ju52_p_lufthansa.png;lufthansa2;Lufthansa 2;false;true;]"
-    basic_form = basic_form.."image_button[1,3.2;3,1;ju52_p_luftwaffe.png;luftwaffe;Luftwaffe;false;true;]"
-    basic_form = basic_form.."image_button[1,4.3;3,1;ju52_white.png^[multiply:#2b2b2b;black;Black;false;true;]"
-    basic_form = basic_form.."image_button[1,5.4;3,1;ju52_white.png^[multiply:#0063b0;blue;Blue;false;true;]"
-    basic_form = basic_form.."image_button[1,6.5;3,1;ju52_white.png^[multiply:#8c5922;brown;Brown;false;true;]"
-    basic_form = basic_form.."image_button[1,7.6;3,1;ju52_white.png^[multiply:#07B6BC;cyan;Cyan;false;true;]"
-    basic_form = basic_form.."image_button[1,8.7;3,1;ju52_white.png^[multiply:#567a42;dark_green;Dark Green;false;true;]"
-    basic_form = basic_form.."image_button[1,9.8;3,1;ju52_white.png^[multiply:#6d6d6d;dark_grey;Dark Gray;false;true;]"
+    basic_form = basic_form.."image_button[0.5,0.5;3,1;ju52_p_lufthansa.png;lufthansa;Lufthansa;false;true;]"
+    basic_form = basic_form.."image_button[0.5,1.6;3,1;ju52_p_lufthansa.png;lufthansa2;Lufthansa 2;false;true;]"
+    basic_form = basic_form.."image_button[0.5,2.7;3,1;ju52_p_luftwaffe.png;luftwaffe;Luftwaffe;false;true;]"
+    --basic_form = basic_form.."image_button[1,4.3;3,1;ju52_white.png^[multiply:#2b2b2b;black;Black;false;true;]"    
 
-    basic_form = basic_form.."image_button[4.1,1.0;3,1;ju52_white.png^[multiply:#4ee34c;green;Green;false;true;]"
-    basic_form = basic_form.."image_button[4.1,2.1;3,1;ju52_white.png^[multiply:#9f9f9f;grey;Gray;false;true;]"
-    basic_form = basic_form.."image_button[4.1,3.2;3,1;ju52_white.png^[multiply:#ff0098;magenta;Magenta;false;true;]"
-    basic_form = basic_form.."image_button[4.1,4.3;3,1;ju52_white.png^[multiply:#ff8b0e;orange;Orange;false;true;]"
-    basic_form = basic_form.."image_button[4.1,5.4;3,1;ju52_white.png^[multiply:#ff62c6;pink;Pink;false;true;]"
-    basic_form = basic_form.."image_button[4.1,6.5;3,1;ju52_white.png^[multiply:#dc1818;red;Red;false;true;]"
-    basic_form = basic_form.."image_button[4.1,7.6;3,1;ju52_white.png^[multiply:#a437ff;violet;Violet;false;true;]"
-    basic_form = basic_form.."image_button[4.1,8.7;3,1;ju52_white.png^[multiply:#ffe400;yellow;Yellow;false;true;]"
-    basic_form = basic_form.."image_button[4.1,9.8;3,1;ju52_white.png^[multiply:#ffffff;white;White;false;true;]"
-    
     minetest.show_formspec(name, "ju52:paint", basic_form)
 end
 
@@ -91,7 +76,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         if fields.lufthansa2 then ju52.set_skin(plane_obj, "ju52_skin_lufthansa2.png", search_string) end
         if fields.luftwaffe then ju52.set_skin(plane_obj, "ju52_skin_luftwaffe.png", search_string) end
 
-		if fields.black then ju52.paint(plane_obj, "#2b2b2b", search_string) end
+		--[[if fields.black then ju52.paint(plane_obj, "#2b2b2b", search_string) end
         if fields.blue then ju52.paint(plane_obj, "#0063b0", search_string) end
         if fields.brown then ju52.paint(plane_obj, "#8c5922", search_string) end
         if fields.cyan then ju52.paint(plane_obj, "#07B6BC", search_string) end
@@ -106,7 +91,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         if fields.red then ju52.paint(plane_obj, "#dc1818", search_string) end
         if fields.violet then ju52.paint(plane_obj, "#a437ff", search_string) end
         if fields.yellow then ju52.paint(plane_obj, "#ffe400", search_string) end
-        if fields.white then ju52.paint(plane_obj, "#ffffff", search_string) end
+        if fields.white then ju52.paint(plane_obj, "#ffffff", search_string) end]]--
         minetest.close_formspec(name, "ju52:paint")
 	end
 	if formname == "ju52:passenger_main" then

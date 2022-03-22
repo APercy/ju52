@@ -297,21 +297,28 @@ minetest.register_entity("ju52:ju52", {
                 end
                 return
             else
-                -- deal with painting or destroying
-		        if not self.driver and toolcaps and toolcaps.damage_groups
-                        and toolcaps.damage_groups.fleshy and item_name ~= airutils.fuel then
-			        --mobkit.hurt(self,toolcaps.damage_groups.fleshy - 1)
-			        --mobkit.make_sound(self,'hit')
-                    self.hp_max = self.hp_max - 10
-                    minetest.sound_play("ju52_collision", {
-                        object = self.object,
-                        max_hear_distance = 5,
-                        gain = 1.0,
-                        fade = 0.0,
-                        pitch = 1.0,
-                    })
-                    airutils.setText(self, "Ju 52")
-		        end
+                -- deal with painting or destroying 
+                if airutils.set_paint(self, puncher, itmstck, "ju52_white.png") == false then
+		            if not self.driver and toolcaps and toolcaps.damage_groups
+                            and toolcaps.damage_groups.fleshy and item_name ~= airutils.fuel then
+			            --mobkit.hurt(self,toolcaps.damage_groups.fleshy - 1)
+			            --mobkit.make_sound(self,'hit')
+                        self.hp_max = self.hp_max - 10
+                        minetest.sound_play("ju52_collision", {
+                            object = self.object,
+                            max_hear_distance = 5,
+                            gain = 1.0,
+                            fade = 0.0,
+                            pitch = 1.0,
+                        })
+                        airutils.setText(self, "Ju 52")
+		            end
+                else
+                    --why?!!!! I'm hacking the painting function. I know it cannot paint at first usage here, so, I'll set the
+                    --right texture and repeat
+                    self.initial_properties.textures = ju52.textures_copy()
+                    airutils.set_paint(self, puncher, itmstck, ju52.skin_texture)
+                end
             end
 
             if self.hp_max <= 0 then
