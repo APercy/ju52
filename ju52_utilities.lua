@@ -598,9 +598,9 @@ function ju52.flightstep(self)
 
     -- new yaw
 	if math.abs(self._rudder_angle)>1 then
-        local turn_rate = math.rad(12)
+        local turn_rate = math.rad(10)
         local turn = math.rad(self._rudder_angle) * turn_rate
-        local yaw_turn = self.dtime * (turn * ju52.sign(longit_speed) * math.abs(longit_speed/2))
+        local yaw_turn = self.dtime * (turn * ju52.sign(longit_speed) * math.abs(longit_speed/3))
 		newyaw = yaw + yaw_turn
 	end
 
@@ -613,7 +613,7 @@ function ju52.flightstep(self)
         local snormal = {x=sdir.z,y=0,z=-sdir.x}	-- rightside, dot is negative
         local prsr = ju52.dot(snormal,nhdir)
         local rollfactor = -90
-        local roll_rate = math.rad(12)
+        local roll_rate = math.rad(10)
         newroll = (prsr*math.rad(rollfactor)) * (later_speed * roll_rate) * ju52.sign(longit_speed)
         --minetest.chat_send_all('newroll: '.. newroll)
     else
