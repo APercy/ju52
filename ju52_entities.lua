@@ -110,6 +110,8 @@ minetest.register_entity("ju52:ju52", {
     _skin = 'ju52_skin_lufthansa.png',
     _inv = nil,
     _inv_id = "",
+    _door_closed = true,
+    _door_command = 1, --1 close, 0 open
 
     get_staticdata = function(self) -- unloaded/unloads ... is now saved
         return minetest.serialize({
@@ -441,7 +443,9 @@ minetest.register_entity("ju52:ju52", {
                     --ju52.dettach_pax(self, clicker)
                 else
                     --attach normal passenger
-                    ju52.attach_pax(self, clicker)
+                    if self._door_closed == false then
+                        ju52.attach_pax(self, clicker)
+                    end
                 end
 
             else

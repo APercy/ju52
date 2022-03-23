@@ -138,10 +138,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             end
 		end
 		if fields.open_door then
-            ent.object:set_bone_position("door", {x=-11.35, y=32.65, z=9.87}, {x=88.5, y=0, z=0})
+            ent._door_command = 0
 		end
 		if fields.close_door then
-            ent.object:set_bone_position("door", {x=-11.35, y=32.65, z=9.87}, {x=91.5, y=0, z=180})
+            ent._door_command = 1
 		end
 		if fields.go_out then
             --=========================

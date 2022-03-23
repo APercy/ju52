@@ -462,6 +462,32 @@ function ju52.flap_operate(self, player)
     end
 end
 
+function ju52.door_operate(self, player)
+    if self._door_closed == true then
+        minetest.chat_send_player(player:get_player_name(), ">>> Door open")
+        self.object:set_bone_position("door", {x=-11.35, y=32.65, z=9.87}, {x=88.5, y=0, z=0})
+        self._door_closed = false
+        minetest.sound_play("ju52_door", {
+            object = self.object,
+            max_hear_distance = 10,
+            gain = 1.0,
+            fade = 0.0,
+            pitch = 0.5,
+        }, true)
+    else
+        minetest.chat_send_player(player:get_player_name(), ">>> Door closed")
+        self.object:set_bone_position("door", {x=-11.35, y=32.65, z=9.87}, {x=91.5, y=0, z=180})
+        self._door_closed = true
+        minetest.sound_play("ju52_door", {
+            object = self.object,
+            max_hear_distance = 10,
+            gain = 1.0,
+            fade = 0.0,
+            pitch = 0.7,
+        }, true)
+    end
+end
+
 --xyz = {x=66, y=283, z=205}
 
 function ju52.flightstep(self)
@@ -590,6 +616,19 @@ function ju52.flightstep(self)
     end --limiting the very high climb angle due to strange behavior]]--
 
     --minetest.chat_send_all(self._angle_of_attack)
+
+    if longit_speed > 2 and self._door_closed == false then
+        self._door_command = 1
+    end
+
+    if player then
+        if self._door_command == 1 and self._door_closed == false then
+            ju52.door_operate(self, player)
+        end
+        if self._door_command == 0 and self._door_closed == true then
+            ju52.door_operate(self, player)
+        end
+    end
 
     -- pitch
     local speed_factor = 0
