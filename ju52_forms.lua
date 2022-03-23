@@ -28,8 +28,20 @@ end
 function ju52.pilot_formspec(name)
     local basic_form = table.concat({
         "formspec_version[3]",
-        "size[6,11.5]",
+        "size[6,12]",
 	}, "")
+
+    local player = minetest.get_player_by_name(name)
+    local plane_obj = ju52.getPlaneFromPlayer(player)
+    if plane_obj == nil then
+        return
+    end
+    local ent = plane_obj:get_luaentity()
+
+    local pass_list = ""
+    for k, v in pairs(ent._passengers) do
+        pass_list = pass_list .. v .. ","
+    end
 
     local copilot_name = "test"
 	basic_form = basic_form.."button[1,1.0;4,1;turn_on;Start/Stop Engines]"
@@ -39,8 +51,8 @@ function ju52.pilot_formspec(name)
     basic_form = basic_form.."button[1,5.4;4,1;open_door;Open the Door]"
     basic_form = basic_form.."button[1,6.4;4,1;close_door;Close the Door]"
     basic_form = basic_form.."button[1,7.8;4,1;go_out;Go Offboard]"
-    basic_form = basic_form.."button[1,9.5;4,1;eject_copilot;Eject copilot]"
-    
+    basic_form = basic_form.."label[1,10;Bring a copilot:]"
+    basic_form = basic_form.."dropdown[1,10.2;4,1;copilot;"..pass_list..";0;false]"
 
     minetest.show_formspec(name, "ju52:pilot_main", basic_form)
 end
@@ -76,22 +88,6 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         if fields.lufthansa2 then ju52.set_skin(plane_obj, "ju52_skin_lufthansa2.png", search_string) end
         if fields.luftwaffe then ju52.set_skin(plane_obj, "ju52_skin_luftwaffe.png", search_string) end
 
-		--[[if fields.black then ju52.paint(plane_obj, "#2b2b2b", search_string) end
-        if fields.blue then ju52.paint(plane_obj, "#0063b0", search_string) end
-        if fields.brown then ju52.paint(plane_obj, "#8c5922", search_string) end
-        if fields.cyan then ju52.paint(plane_obj, "#07B6BC", search_string) end
-        if fields.dark_green then ju52.paint(plane_obj, "#567a42", search_string) end
-        if fields.dark_grey then ju52.paint(plane_obj, "#6d6d6d", search_string) end
-        if fields.green then ju52.paint(plane_obj, "#4ee34c", search_string) end
-
-        if fields.grey then ju52.paint(plane_obj, "#9f9f9f", search_string) end
-        if fields.magenta then ju52.paint(plane_obj, "#ff0098", search_string) end
-        if fields.orange then ju52.paint(plane_obj, "#ff8b0e", search_string) end
-        if fields.pink then ju52.paint(plane_obj, "#ff62c6", search_string) end
-        if fields.red then ju52.paint(plane_obj, "#dc1818", search_string) end
-        if fields.violet then ju52.paint(plane_obj, "#a437ff", search_string) end
-        if fields.yellow then ju52.paint(plane_obj, "#ffe400", search_string) end
-        if fields.white then ju52.paint(plane_obj, "#ffffff", search_string) end]]--
         minetest.close_formspec(name, "ju52:paint")
 	end
 	if formname == "ju52:passenger_main" then
@@ -142,7 +138,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             end
 		end
 		if fields.open_door then
-            --
+            --ent.object:set_bone_position("door", {x=-11.35, y=7.39, z=-43.11}, {x=0, y=90, z=0})
 		end
 		if fields.close_door then
             --
@@ -180,8 +176,34 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             ent._instruction_mode = false
             ju52.dettachPlayer(ent, player)
 		end
-		if fields.accept_copilot then
-            --
+		if fields.copilot then
+            --look for a free seat first
+            local is_there_a_free_seat = false
+            for i = 10,1,-1 
+            do 
+                if ent._passengers[i] == nil then
+                    is_there_a_free_seat = true
+                    break
+                end
+            end
+            --then move the current copilot to a free seat
+            if ent._passenger and is_there_a_free_seat then
+                local copilot_player_obj = minetest.get_player_by_name(ent._passenger)
+                if copilot_player_obj then
+                    ju52.dettach_pax(ent, copilot_player_obj)
+                    ju52.attach_pax(ent, copilot_player_obj)
+                else
+                    ent._passenger = nil
+                end
+            end
+            --so bring the new copilot
+            if ent._passenger == nil then
+                local new_copilot_player_obj = minetest.get_player_by_name(fields.copilot)
+                if new_copilot_player_obj then
+                    ju52.dettach_pax(ent, new_copilot_player_obj)
+                    ju52.attach_pax(ent, new_copilot_player_obj, true)
+                end
+            end
 		end
         minetest.close_formspec(name, "ju52:pilot_main")
     end

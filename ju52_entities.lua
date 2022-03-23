@@ -440,14 +440,8 @@ minetest.register_entity("ju52:ju52", {
                     ju52.pax_formspec(name)
                     --ju52.dettach_pax(self, clicker)
                 else
-                    --add pax
-                    if clicker:get_player_control().sneak == true then
-                        --attach copilot
-                        ju52.attach_pax(self, clicker, true)
-                    else
-                        --attach normal passenger
-                        ju52.attach_pax(self, clicker)
-                    end
+                    --attach normal passenger
+                    ju52.attach_pax(self, clicker)
                 end
 
             else
