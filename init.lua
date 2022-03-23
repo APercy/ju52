@@ -39,9 +39,8 @@ ju52.textures = {
     "ju52_compass.png", --bussola
     "ju52_white.png", --ponteiros
     "ju52_metal.png", "ju52_black.png", --manetes potencia
-    ju52.skin_texture, --porta exterior
-    "ju52_glass.png", -- vidro porta
-    "ju52_bege.png", -- interno porta
+    "ju52_glass.png", --vidro porta
+    "ju52_bege.png", --interno porta
     "ju52_engine.png", "ju52_black.png", --motor
     "ju52_engine.png", "ju52_black.png", --motores
     ju52.skin_texture, --fuselagem

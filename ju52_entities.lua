@@ -280,7 +280,7 @@ minetest.register_entity("ju52:ju52", {
             end
 
             --repair
-            if (item_name == "hidroplane:repair_tool" or item_name == "trike:repair_tool" or item_name == "airutils:repair_tool" or item_name == "default:mese_crystal")
+            if (item_name == "airutils:repair_tool" or item_name == "default:mese_crystal")
                     and self._engine_running == false  then
                 if self.hp_max < 50 then
                     local inventory_item = "default:steel_ingot"
@@ -298,7 +298,7 @@ minetest.register_entity("ju52:ju52", {
                 return
             else
                 -- deal with painting or destroying 
-                if airutils.set_paint(self, puncher, itmstck, "ju52_white.png") == false then
+                if airutils.set_paint(self, puncher, itmstck, ju52.skin_texture) == false then
 		            if not self.driver and toolcaps and toolcaps.damage_groups
                             and toolcaps.damage_groups.fleshy and item_name ~= airutils.fuel then
 			            --mobkit.hurt(self,toolcaps.damage_groups.fleshy - 1)
