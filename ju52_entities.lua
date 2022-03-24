@@ -379,11 +379,6 @@ minetest.register_entity("ju52:ju52", {
         --=========================
         elseif name == copilot_name then
             ju52.pax_formspec(name)
-            --[[if is_on_ground or clicker:get_player_control().sneak then
-                ju52.dettach_pax(self, clicker)
-            else
-                minetest.chat_send_player(name, "Hold sneak and right-click to disembark while flying")
-            end]]--
 
         --=========================
         --  attach pilot
