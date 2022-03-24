@@ -8,9 +8,11 @@ function ju52.physics(self)
 	local vel=self.object:get_velocity()
 		-- dumb friction
 	if self.isonground and not self.isinliquid then
-		self.object:set_velocity({x=vel.x*friction,
+        --minetest.chat_send_all("with friction")
+		vel = {x=vel.x*friction,
 								y=vel.y,
-								z=vel.z*friction})
+								z=vel.z*friction}
+        self.object:set_velocity(vel)
 	end
 	
 	-- bounciness
@@ -33,11 +35,14 @@ function ju52.physics(self)
 			end
 			self.collided = false
 		end
-		
+		--minetest.chat_send_all("vnew")
 		self.object:set_velocity(vnew)
     else
         self.object:set_pos(self.object:get_pos())
-        self.object:set_velocity(vel)        
+        if not self.isonground then
+            --minetest.chat_send_all("test")
+            self.object:set_velocity(vel)
+        end
 	end
     --self.object:set_acceleration({x=0,y=mobkit.gravity,z=0})
 
