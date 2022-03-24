@@ -417,7 +417,7 @@ function ju52.checkattachBug(self)
 end
 
 function ju52.flap_on(self)
-    self._wing_configuration = 3
+    self._wing_configuration = 1.5
     self.object:set_bone_position("l_flap1", {x=-40.5, y=2.3, z=1}, {x=6, y=8, z=96.2}) --recolhido {x=6, y=-8, z=94.4}  extendido {x=6, y=8, z=96.2}
     --self.object:set_bone_position("l_flap2", {x=0, y=9, z=0}, {x=6, y=8, z=96.2}) --recolhido {x=2.4, y=0, z=91}  extendido {x=6, y=8, z=96.2}
 
