@@ -349,16 +349,16 @@ minetest.register_entity("ju52:ju52", {
             self.owner = name
         end
 
-        local passenger_name = nil
+        local copilot_name = nil
         if self._passenger then
-            passenger_name = self._passenger
+            copilot_name = self._passenger
         end
 
         local touching_ground, liquid_below = airutils.check_node_below(self.object, 2.5)
         local is_on_ground = self.isinliquid or touching_ground or liquid_below
         local is_under_water = airutils.check_is_under_water(self.object)
 
-        --minetest.chat_send_all('name '.. dump(name) .. ' - pilot: ' .. dump(self.driver_name) .. ' - pax: ' .. dump(passenger_name))
+        --minetest.chat_send_all('name '.. dump(name) .. ' - pilot: ' .. dump(self.driver_name) .. ' - pax: ' .. dump(copilot_name))
         --=========================
         --  form to pilot
         --=========================
@@ -375,14 +375,15 @@ minetest.register_entity("ju52:ju52", {
                 self.driver_name = nil
             end
         --=========================
-        --  detach passenger
+        --  detach copilot
         --=========================
-        elseif name == passenger_name then
-            if is_on_ground or clicker:get_player_control().sneak then
+        elseif name == copilot_name then
+            ju52.pax_formspec(name)
+            --[[if is_on_ground or clicker:get_player_control().sneak then
                 ju52.dettach_pax(self, clicker)
             else
                 minetest.chat_send_player(name, "Hold sneak and right-click to disembark while flying")
-            end
+            end]]--
 
         --=========================
         --  attach pilot

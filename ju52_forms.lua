@@ -27,7 +27,7 @@ end
 
 function ju52.pilot_formspec(name)
     local basic_form = table.concat({
-        "formspec_version[3]",
+        "formspec_version[5]",
         "size[6,12]",
 	}, "")
 
@@ -43,13 +43,18 @@ function ju52.pilot_formspec(name)
         pass_list = pass_list .. v .. ","
     end
 
+    local flap_is_down = "false"
+    if ent._flap then flap_is_down = "true" end
+    local door_is_open = "true"
+    if ent._door_closed then door_is_open = "false" end
+
     local copilot_name = "test"
 	basic_form = basic_form.."button[1,1.0;4,1;turn_on;Start/Stop Engines]"
     basic_form = basic_form.."button[1,2.0;4,1;hud;Show/Hide Gauges]"
     basic_form = basic_form.."button[1,3.0;4,1;turn_auto_pilot_on;Auto Pilot]"
     basic_form = basic_form.."button[1,4.0;4,1;pass_control;Pass the Control]"
-    basic_form = basic_form.."button[1,5.4;4,1;open_door;Open the Door]"
-    basic_form = basic_form.."button[1,6.4;4,1;close_door;Close the Door]"
+    basic_form = basic_form.."checkbox[1,5.8;flap_is_down;Flaps down;"..flap_is_down.."]"
+    basic_form = basic_form.."checkbox[1,6.8;door_is_open;Door opened;"..door_is_open.."]"
     basic_form = basic_form.."button[1,7.8;4,1;go_out;Go Offboard]"
     basic_form = basic_form.."label[1,10;Bring a copilot:]"
     basic_form = basic_form.."dropdown[1,10.2;4,1;copilot;"..pass_list..";0;false]"
@@ -137,11 +142,26 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 				airutils.transfer_control(ent, true)
             end
 		end
-		if fields.open_door then
-            ent._door_command = 0
-		end
-		if fields.close_door then
-            ent._door_command = 1
+        if fields.flap_is_down then
+            if fields.flap_is_down == "true" then
+                ent._flap = true
+            else
+                ent._flap = false
+            end
+            minetest.sound_play("ju52_collision", {
+                object = ent.object,
+                max_hear_distance = 10,
+                gain = 1.0,
+                fade = 0.0,
+                pitch = 0.5,
+            }, true)
+        end
+		if fields.door_is_open then
+            if fields.door_is_open == "true" then
+                ent._door_command = 0
+            else
+                ent._door_command = 1
+            end
 		end
 		if fields.go_out then
             --=========================
