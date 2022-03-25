@@ -736,7 +736,7 @@ function ju52.flightstep(self)
     end
 
     --is an stall, force a recover
-    if longit_speed < ju52.min_speed and climb_rate < -3 and is_flying then
+    if longit_speed < (ju52.min_speed / 2) and climb_rate < -3 and is_flying then
         self._elevator_angle = 0
         self._angle_of_attack = -1
         newpitch = math.rad(self._angle_of_attack)
