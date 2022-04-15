@@ -718,7 +718,8 @@ function ju52.flightstep(self)
     if stop ~= true then
         self._last_accell = new_accel
 	    self.object:move_to(curr_pos)
-        self.object:set_velocity(velocity)
+        --self.object:set_velocity(velocity)
+        self.object:set_acceleration(self.object:get_acceleration())
         mobkit.set_acceleration(self.object, new_accel)
     elseif stop == true then
         self._last_accell = {x=0, y=0, z=0}
