@@ -41,7 +41,7 @@ function ju52.attach(self, player)
     player_api.player_attached[name] = true
     -- make the driver sit
     minetest.after(0.2, function()
-        player = minetest.get_player_by_name(name)
+        --player = minetest.get_player_by_name(name)
         if player then
 	        player_api.set_animation(player, "sit")
             --apply_physics_override(player, {speed=0,gravity=0,jump=0})
@@ -719,7 +719,9 @@ function ju52.flightstep(self)
         self._last_accell = new_accel
 	    self.object:move_to(curr_pos)
         --self.object:set_velocity(velocity)
-        self.object:set_acceleration(self.object:get_acceleration())
+        if player then
+            ju52.attach(self, player)
+        end
         mobkit.set_acceleration(self.object, new_accel)
     elseif stop == true then
         self._last_accell = {x=0, y=0, z=0}
