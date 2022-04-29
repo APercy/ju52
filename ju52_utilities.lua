@@ -808,10 +808,10 @@ function ju52.flightstep(self)
         in a normal situation I would consider 1000 feet as 320 blocks, but in minetest I could
         divide it by 4
      ]]--
-    local altitude = (curr_pos.y * 4) / 320
+    local altitude = (curr_pos.y / 0.32) / 100
     local hour, minutes = math.modf( altitude )
     hour = math.fmod (hour, 10)
-    minutes = math.floor(minutes * 100)
+    minutes = minutes * 100
     minutes = (minutes * 100) / 100
     local minute_angle = (minutes*-360)/100
     local hour_angle = (hour*-360)/10 + ((minute_angle*36)/360)
