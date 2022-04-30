@@ -804,10 +804,6 @@ function ju52.flightstep(self)
     self.object:set_bone_position("compass", {x=0, y=-40.55, z=18.2}, {x=0, y=(math.deg(newyaw)), z=0})
 
     --altimeters
-    --[[lets adopt a convention here... The minetest clouds are very low
-        in a normal situation I would consider 1000 feet as 320 blocks, but in minetest I could
-        divide it by 4
-     ]]--
     local altitude = (curr_pos.y / 0.32) / 100
     local hour, minutes = math.modf( altitude )
     hour = math.fmod (hour, 10)
