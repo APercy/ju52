@@ -783,6 +783,10 @@ function ju52.flightstep(self)
         if math.abs(longit_speed) < tail_lift_min_speed then newpitch = math.rad(tail_angle) end
     end
 
+    if longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
+        return
+    end
+
     if is_flying == false then --isn't flying?
         --animate wheels
         self.object:set_animation_frame_speed(longit_speed * 10)
