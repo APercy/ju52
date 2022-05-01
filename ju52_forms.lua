@@ -85,14 +85,14 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             return
         end
         local ent = plane_obj:get_luaentity()
-        
-        ent.initial_properties.textures = ju52.textures_copy() --reset the textures first
-        local search_string = ju52.skin_texture --then set to find the defaults
+        if ent then
+            ent.initial_properties.textures = ju52.textures_copy() --reset the textures first
+            local search_string = ju52.skin_texture --then set to find the defaults
 
-        if fields.lufthansa then ju52.set_skin(plane_obj, "ju52_skin_lufthansa.png", search_string) end
-        if fields.lufthansa2 then ju52.set_skin(plane_obj, "ju52_skin_lufthansa2.png", search_string) end
-        if fields.luftwaffe then ju52.set_skin(plane_obj, "ju52_skin_luftwaffe.png", search_string) end
-
+            if fields.lufthansa then ju52.set_skin(plane_obj, "ju52_skin_lufthansa.png", search_string) end
+            if fields.lufthansa2 then ju52.set_skin(plane_obj, "ju52_skin_lufthansa2.png", search_string) end
+            if fields.luftwaffe then ju52.set_skin(plane_obj, "ju52_skin_luftwaffe.png", search_string) end
+        end
         minetest.close_formspec(name, "ju52:paint")
 	end
 	if formname == "ju52:passenger_main" then
@@ -103,13 +103,15 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             return
         end
         local ent = plane_obj:get_luaentity()
-		if fields.new_seat then
-            ju52.dettach_pax(ent, player)
-            ju52.attach_pax(ent, player)
-		end
-		if fields.go_out then
-            ju52.dettach_pax(ent, player)
-		end
+        if ent then
+		    if fields.new_seat then
+                ju52.dettach_pax(ent, player)
+                ju52.attach_pax(ent, player)
+		    end
+		    if fields.go_out then
+                ju52.dettach_pax(ent, player)
+		    end
+        end
         minetest.close_formspec(name, "ju52:passenger_main")
 	end
     if formname == "ju52:pilot_main" then
@@ -120,111 +122,113 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
             return
         end
         local ent = plane_obj:get_luaentity()
-		if fields.turn_on then
-            ju52.start_engine(ent)
-		end
-        if fields.hud then
-            if ent._show_hud == true then
-                ent._show_hud = false
-            else
-                ent._show_hud = true
-            end
-        end
-		if fields.turn_auto_pilot_on then
-            --
-		end
-		if fields.pass_control then
-            if ent._command_is_given == true then
-				--take the control
-				airutils.transfer_control(ent, false)
-            else
-				--trasnfer the control to student
-				airutils.transfer_control(ent, true)
-            end
-		end
-        if fields.flap_is_down then
-            if fields.flap_is_down == "true" then
-                ent._flap = true
-            else
-                ent._flap = false
-            end
-            minetest.sound_play("ju52_collision", {
-                object = ent.object,
-                max_hear_distance = 10,
-                gain = 1.0,
-                fade = 0.0,
-                pitch = 0.5,
-            }, true)
-        end
-		if fields.door_is_open then
-            if fields.door_is_open == "true" then
-                ent._door_command = 0
-            else
-                ent._door_command = 1
-            end
-		end
-		if fields.go_out then
-            --=========================
-            --  dettach player
-            --=========================
-            -- eject passenger if the plane is on ground
-            local touching_ground, liquid_below = airutils.check_node_below(plane_obj, 2.5)
-            if ent.isinliquid or touching_ground then --isn't flying?
-                --ok, remove pax
-                local passenger = nil
-                if ent._passenger then
-                    passenger = minetest.get_player_by_name(ent._passenger)
-                    if passenger then ju52.dettach_pax(ent, passenger) end
+        if ent then
+		    if fields.turn_on then
+                ju52.start_engine(ent)
+		    end
+            if fields.hud then
+                if ent._show_hud == true then
+                    ent._show_hud = false
+                else
+                    ent._show_hud = true
                 end
-                for i = 10,1,-1 
-                do 
-                    if ent._passengers[i] then
-                        passenger = minetest.get_player_by_name(ent._passengers[i])
-                        if passenger then
-                            ju52.dettach_pax(ent, passenger)
-                            --minetest.chat_send_all('saiu')
+            end
+		    if fields.turn_auto_pilot_on then
+                --
+		    end
+		    if fields.pass_control then
+                if ent._command_is_given == true then
+				    --take the control
+				    airutils.transfer_control(ent, false)
+                else
+				    --trasnfer the control to student
+				    airutils.transfer_control(ent, true)
+                end
+		    end
+            if fields.flap_is_down then
+                if fields.flap_is_down == "true" then
+                    ent._flap = true
+                else
+                    ent._flap = false
+                end
+                minetest.sound_play("ju52_collision", {
+                    object = ent.object,
+                    max_hear_distance = 10,
+                    gain = 1.0,
+                    fade = 0.0,
+                    pitch = 0.5,
+                }, true)
+            end
+		    if fields.door_is_open then
+                if fields.door_is_open == "true" then
+                    ent._door_command = 0
+                else
+                    ent._door_command = 1
+                end
+		    end
+		    if fields.go_out then
+                --=========================
+                --  dettach player
+                --=========================
+                -- eject passenger if the plane is on ground
+                local touching_ground, liquid_below = airutils.check_node_below(plane_obj, 2.5)
+                if ent.isinliquid or touching_ground then --isn't flying?
+                    --ok, remove pax
+                    local passenger = nil
+                    if ent._passenger then
+                        passenger = minetest.get_player_by_name(ent._passenger)
+                        if passenger then ju52.dettach_pax(ent, passenger) end
+                    end
+                    for i = 10,1,-1 
+                    do 
+                        if ent._passengers[i] then
+                            passenger = minetest.get_player_by_name(ent._passengers[i])
+                            if passenger then
+                                ju52.dettach_pax(ent, passenger)
+                                --minetest.chat_send_all('saiu')
+                            end
                         end
                     end
-                end
-            else
-                --give the control to the pax
-                if ent._passenger then
-                    ent._autopilot = false
-                    airutils.transfer_control(ent, true)
-                end
-            end
-            ent._instruction_mode = false
-            ju52.dettachPlayer(ent, player)
-		end
-		if fields.copilot then
-            --look for a free seat first
-            local is_there_a_free_seat = false
-            for i = 10,1,-1 
-            do 
-                if ent._passengers[i] == nil then
-                    is_there_a_free_seat = true
-                    break
-                end
-            end
-            --then move the current copilot to a free seat
-            if ent._passenger and is_there_a_free_seat then
-                local copilot_player_obj = minetest.get_player_by_name(ent._passenger)
-                if copilot_player_obj then
-                    ju52.dettach_pax(ent, copilot_player_obj)
-                    ju52.attach_pax(ent, copilot_player_obj)
                 else
-                    ent._passenger = nil
+                    --give the control to the pax
+                    if ent._passenger then
+                        ent._autopilot = false
+                        airutils.transfer_control(ent, true)
+                    end
                 end
-            end
-            --so bring the new copilot
-            if ent._passenger == nil then
-                local new_copilot_player_obj = minetest.get_player_by_name(fields.copilot)
-                if new_copilot_player_obj then
-                    ju52.dettach_pax(ent, new_copilot_player_obj)
-                    ju52.attach_pax(ent, new_copilot_player_obj, true)
+                ent._instruction_mode = false
+                ju52.dettachPlayer(ent, player)
+		    end
+		    if fields.copilot then
+                --look for a free seat first
+                local is_there_a_free_seat = false
+                for i = 10,1,-1 
+                do 
+                    if ent._passengers[i] == nil then
+                        is_there_a_free_seat = true
+                        break
+                    end
                 end
-            end
-		end
+                --then move the current copilot to a free seat
+                if ent._passenger and is_there_a_free_seat then
+                    local copilot_player_obj = minetest.get_player_by_name(ent._passenger)
+                    if copilot_player_obj then
+                        ju52.dettach_pax(ent, copilot_player_obj)
+                        ju52.attach_pax(ent, copilot_player_obj)
+                    else
+                        ent._passenger = nil
+                    end
+                end
+                --so bring the new copilot
+                if ent._passenger == nil then
+                    local new_copilot_player_obj = minetest.get_player_by_name(fields.copilot)
+                    if new_copilot_player_obj then
+                        ju52.dettach_pax(ent, new_copilot_player_obj)
+                        ju52.attach_pax(ent, new_copilot_player_obj, true)
+                    end
+                end
+		    end
+        end
         minetest.close_formspec(name, "ju52:pilot_main")
     end
 end)
