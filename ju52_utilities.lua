@@ -602,6 +602,15 @@ function ju52.flightstep(self)
 
     local is_attached = ju52.checkAttach(self, player)
 
+	if not is_attached then
+        -- for some engine error the player can be detached from the machine, so lets set him attached again
+        ju52.checkattachBug(self)
+    end
+
+    if longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
+        return
+    end
+
     --ajustar angulo de ataque
     local percentage = math.abs(((longit_speed * 100)/(ju52.min_speed + 5))/100)
     if percentage > 1.5 then percentage = 1.5 end
@@ -669,11 +678,6 @@ function ju52.flightstep(self)
 
     ---------------------------------
     -- end roll
-
-	if not is_attached then
-        -- for some engine error the player can be detached from the machine, so lets set him attached again
-        ju52.checkattachBug(self)
-    end
 
     local pilot = player
     if self._command_is_given and passenger then
@@ -781,10 +785,6 @@ function ju52.flightstep(self)
         end
     else
         if math.abs(longit_speed) < tail_lift_min_speed then newpitch = math.rad(tail_angle) end
-    end
-
-    if longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
-        return
     end
 
     if is_flying == false then --isn't flying?
