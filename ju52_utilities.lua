@@ -40,7 +40,7 @@ function ju52.attach(self, player)
     player:set_eye_offset({x = 0, y = eye_y, z = 2}, {x = 0, y = 3, z = -30})
     player_api.player_attached[name] = true
     -- make the driver sit
-    minetest.after(0.2, function()
+    minetest.after(1, function()
         --player = minetest.get_player_by_name(name)
         if player then
 	        player_api.set_animation(player, "sit")
@@ -116,7 +116,7 @@ function ju52.attach_pax(self, player, is_copilot)
             player:set_eye_offset({x = 0, y = eye_y, z = 2}, {x = 0, y = 3, z = -30})
             player_api.player_attached[name] = true
             -- make the driver sit
-            minetest.after(0.2, function()
+            minetest.after(1, function()
                 player = minetest.get_player_by_name(name)
                 if player then
 	                player_api.set_animation(player, "sit")
@@ -147,7 +147,7 @@ function ju52.attach_pax(self, player, is_copilot)
                 end
                 player_api.player_attached[name] = true
                 -- make the driver sit
-                minetest.after(0.2, function()
+                minetest.after(1, function()
                     player = minetest.get_player_by_name(name)
                     if player then
 	                    player_api.set_animation(player, "sit")
@@ -711,9 +711,9 @@ function ju52.flightstep(self)
         self._last_accell = new_accel
 	    self.object:move_to(curr_pos)
         --self.object:set_velocity(velocity)
-        if player then
+        --[[if player then
             ju52.attach(self, player)
-        end
+        end]]--
         mobkit.set_acceleration(self.object, new_accel)
     elseif stop == true then
         self._last_accell = {x=0, y=0, z=0}
