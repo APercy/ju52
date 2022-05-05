@@ -692,6 +692,7 @@ function ju52.flightstep(self)
 
     --lets apply some bob in water
 	if self.isinliquid then
+        self._engine_running = false
         local bob = ju52.minmax(ju52.dot(accel,hull_direction),0.4)	-- vertical bobbing
         accel.y = accel.y + bob
         local max_pitch = 6
