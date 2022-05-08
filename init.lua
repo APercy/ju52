@@ -70,7 +70,9 @@ ju52.textures = {
 
 
 dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_global_definitions.lua")
-dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_crafts.lua")
+if not minetest.settings:get_bool('ju52.disable_craftitems') then
+    dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_crafts.lua")
+end
 dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_control.lua")
 dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_fuel_management.lua")
 dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_custom_physics.lua")
