@@ -520,8 +520,13 @@ function ju52.tail(self, longit_speed, pitch)
             if new_pitch > math.rad(tail_angle) then new_pitch = math.rad(tail_angle) end --não queremos arrastar o cauda no chão
         end
     else
-        if math.abs(longit_speed) < tail_lift_min_speed then
+        --minetest.chat_send_all(dump(self.isinliquid) .. " ---- " .. dump(self.isonground) )
+        if (self.isinliquid and self.isonground) then
             new_pitch = math.rad(tail_angle)
+        else
+            if math.abs(longit_speed) < tail_lift_min_speed and not(self.isinliquid) then
+                new_pitch = math.rad(tail_angle)
+            end
         end
     end
     return new_pitch
@@ -645,10 +650,6 @@ function ju52.flightstep(self)
     end
 
     if longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
-        if (self.isinliquid and is_flying == false) then
-            local newpitch = ju52.tail(self, longit_speed, pitch)
-            self.object:set_rotation({x=newpitch,y=newyaw,z=newroll})
-        end
         return
     end
 
@@ -844,6 +845,12 @@ function ju52.flightstep(self)
     end
 
     if is_flying == false then --isn't flying?
+        -- new yaw
+        local turn_rate = math.rad(30)
+        local yaw_turn = self.dtime * math.rad(self._rudder_angle) * turn_rate *
+                    pa28.sign(longit_speed) * math.abs(longit_speed/2)
+	    newyaw = yaw + yaw_turn
+
         --animate wheels
         self.object:set_animation_frame_speed(longit_speed * 10)
     else

@@ -81,11 +81,9 @@ function ju52.physics(self)
         --local v_accell = {x=0,y=buoyacc-(vel.y*abs(vel.y)*0.4),z=0}
         mobkit.set_acceleration(self.object,accell)
 	else
-        mobkit.set_acceleration(self.object,{x=0,y=0,z=0})
-		self.isinliquid = false
+        self.isinliquid = false
+        self.object:move_to(self.object:get_pos())
+        mobkit.set_acceleration(self.object,{x=0,y=mobkit.gravity,z=0})
 	end
-    
-    self.object:move_to(self.object:get_pos())
-    self.object:set_acceleration({x=0,y=mobkit.gravity,z=0})
 
 end

@@ -89,7 +89,7 @@ minetest.register_entity("ju52:ju52", {
     show_on_minimap = true,
     springiness = 0.5,
     physics = ju52.physics,
-    buoyancy = 1.02,
+    buoyancy = 1.0001,
     _last_time_command = 1,
     _command_is_given = false,
     _rudder_angle = 0,
