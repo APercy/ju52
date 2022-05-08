@@ -308,7 +308,7 @@ function ju52.destroy(self)
     --minetest.add_item({x=pos.x+math.random()-0.5,y=pos.y,z=pos.z+math.random()-0.5},'ju52:ju52')
 end
 
-function ju52.testImpact(self, velocity, position)
+function ju52.testDamage(self, velocity, position)
     local p = position --self.object:get_pos()
     local collision = false
     if self._last_vel == nil then return end
@@ -343,6 +343,30 @@ function ju52.testImpact(self, velocity, position)
                 pitch = 1.0,
             }, true)
 	    end
+    end
+
+    --damage by speed
+    if self._last_speed_damage_time == nil then self._last_speed_damage_time = 0 end
+    self._last_speed_damage_time = self._last_speed_damage_time + self.dtime
+    if self._last_speed_damage_time > 3 then self._last_speed_damage_time = 3 end
+    if self._longit_speed > 14 and self._last_speed_damage_time >= 3 then
+        self._last_speed_damage_time = 0
+        minetest.sound_play("ju52_collision", {
+            --to_player = self.driver_name,
+            object = self.object,
+            max_hear_distance = 15,
+            gain = 1.0,
+            fade = 0.0,
+            pitch = 1.0,
+        }, true)
+        self.hp_max = self.hp_max - 5
+        if self.driver_name then
+            local player_name = self.driver_name
+            airutils.setText(self, "Ju 52")
+        end
+        if self.hp_max < 0 then --if acumulated damage is greater than 50, adieu
+            ju52.destroy(self)
+        end
     end
 
     if collision then
@@ -478,7 +502,30 @@ function ju52.door_operate(self, player)
     end
 end
 
---xyz = {x=66, y=283, z=205}
+function ju52.tail(self, longit_speed, pitch)
+    -- adjust pitch at ground
+    local tail_lift_min_speed = 3
+    local tail_lift_max_speed = 8
+    local tail_angle = 17.4
+    local new_pitch = pitch
+    if math.abs(longit_speed) > tail_lift_min_speed then
+        if math.abs(longit_speed) < tail_lift_max_speed then
+            local speed_range = tail_lift_max_speed - tail_lift_min_speed
+            local percentage = 1-((math.abs(longit_speed) - tail_lift_min_speed)/speed_range)
+            if percentage > 1 then percentage = 1 end
+            if percentage < 0 then percentage = 0 end
+            local angle = tail_angle * percentage
+            local calculated_newpitch = math.rad(angle)
+            if new_pitch < calculated_newpitch then new_pitch = calculated_newpitch end --ja aproveita o pitch atual se ja estiver cerrto
+            if new_pitch > math.rad(tail_angle) then new_pitch = math.rad(tail_angle) end --não queremos arrastar o cauda no chão
+        end
+    else
+        if math.abs(longit_speed) < tail_lift_min_speed then
+            new_pitch = math.rad(tail_angle)
+        end
+    end
+    return new_pitch
+end
 
 function ju52.flightstep(self)
     local velocity = self.object:get_velocity()
@@ -598,6 +645,10 @@ function ju52.flightstep(self)
     end
 
     if longit_speed == 0 and is_flying == false and is_attached == false and self._engine_running == false then
+        if (self.isinliquid and is_flying == false) then
+            local newpitch = ju52.tail(self, longit_speed, pitch)
+            self.object:set_rotation({x=newpitch,y=newyaw,z=newroll})
+        end
         return
     end
 
@@ -689,8 +740,8 @@ function ju52.flightstep(self)
     if accel == nil then accel = {x=0,y=0,z=0} end
 
     --lift calculation
-    --accel.y = accel_y
-    accel.y = accel.y + mobkit.gravity
+    accel.y = accel_y
+    --accel.y = accel.y + mobkit.gravity
 
     --lets apply some bob in water
 	if self.isinliquid then
@@ -706,13 +757,30 @@ function ju52.flightstep(self)
 
     local new_accel = accel
     if longit_speed > ju52.min_speed / 2 then
+        --[[lets do something interesting:
+        here I'll fake the longit speed effect for takeoff, to force the airplane
+        to use more runway 
+        ]]--
+        local factorized_longit_speed = longit_speed
+        if is_flying == false and airutils.quadBezier then
+            local takeoff_speed = ju52.min_speed * 4  --so first I'll consider the takeoff speed 4x the minimal flight speed
+            if longit_speed < takeoff_speed and longit_speed > ju52.min_speed then -- then if the airplane is above the mininam speed and bellow the take off
+                local scale = (longit_speed*1)/takeoff_speed --get a scale of current longit speed relative to takeoff speed
+                if scale == nil then scale = 0 end --lets avoid any nil
+                factorized_longit_speed = airutils.quadBezier(scale, ju52.min_speed, longit_speed, longit_speed) --here the magic happens using a bezier curve
+                --minetest.chat_send_all("factor: " .. factorized_longit_speed .. " - longit: " .. longit_speed .. " - scale: " .. scale)
+                if factorized_longit_speed < 0 then factorized_longit_speed = 0 end --lets avoid negative numbers
+                if factorized_longit_speed == nil then factorized_longit_speed = longit_speed end --and nil numbers
+            end
+        end
+        --now gets the lift!
         new_accel = airutils.getLiftAccel(self, velocity, new_accel, longit_speed, roll, curr_pos, ju52.lift, 20000, 25)
     end
     -- end lift
 
     if stop ~= true then
         self._last_accell = new_accel
-	    self.object:move_to(curr_pos)
+	    --self.object:move_to(curr_pos)
         --self.object:set_velocity(velocity)
         --[[if player then
             ju52.attach(self, player)
@@ -733,11 +801,28 @@ function ju52.flightstep(self)
         climb_rate = -5
     end
 
+    --in a command compression during a dive, force the control to recover
+    local longit_initial_speed = 10.5
+    --minetest.chat_send_all(longit_speed)
+    if longit_speed > longit_initial_speed and climb_rate < 0 and is_flying then
+        local recover_command = -0.2
+        if ctrl then
+            if not ctrl.up then
+                self._elevator_angle = recover_command
+            end
+        else
+            self._elevator_angle = recover_command
+        end
+    end
+
     --is an stall, force a recover
     if longit_speed < (ju52.min_speed / 2) and climb_rate < -3 and is_flying then
+        --minetest.chat_send_all("speed: "..longit_speed.." - climb: "..climb_rate)
         self._elevator_angle = 0
-        self._angle_of_attack = -1
+        self._angle_of_attack = -2.0
         newpitch = math.rad(self._angle_of_attack)
+    else
+        newpitch = ju52.tail(self, longit_speed, newpitch)
     end
 
     --minetest.chat_send_all('rate '.. climb_rate)
@@ -756,26 +841,6 @@ function ju52.flightstep(self)
         else
             ju52.remove_hud(player)
         end
-    end
-
-    -- adjust pitch at ground
-    local tail_lift_min_speed = 3
-    local tail_lift_max_speed = 12
-    local tail_angle = 17.4
-    if math.abs(longit_speed) > tail_lift_min_speed then
-        if math.abs(longit_speed) < tail_lift_max_speed then
-            --minetest.chat_send_all(math.abs(longit_speed))
-            local speed_range = tail_lift_max_speed - tail_lift_min_speed
-            percentage = 1-((math.abs(longit_speed) - tail_lift_min_speed)/speed_range)
-            if percentage > 1 then percentage = 1 end
-            if percentage < 0 then percentage = 0 end
-            local angle = tail_angle * percentage
-            local calculated_newpitch = math.rad(angle)
-            if newpitch < calculated_newpitch then newpitch = calculated_newpitch end --ja aproveita o pitch atual se ja estiver cerrto
-            if newpitch > math.rad(tail_angle) then newpitch = math.rad(tail_angle) end --não queremos arrastar o cauda no chão
-        end
-    else
-        if math.abs(longit_speed) < tail_lift_min_speed then newpitch = math.rad(tail_angle) end
     end
 
     if is_flying == false then --isn't flying?
@@ -840,7 +905,7 @@ function ju52.flightstep(self)
     ju52.consumptionCalc(self, accel)
 
     --test collision
-    ju52.testImpact(self, velocity, curr_pos)
+    ju52.testDamage(self, velocity, curr_pos)
 
     --saves last velocity for collision detection (abrupt stop)
     self._last_vel = self.object:get_velocity()
