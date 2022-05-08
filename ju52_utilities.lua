@@ -502,6 +502,24 @@ function ju52.door_operate(self, player)
     end
 end
 
+function ju52.engine_set_sound_and_animation(self)
+    --minetest.chat_send_all('test1 ' .. dump(self._engine_running) )
+    if self._engine_running then
+        if self._last_applied_power ~= self._power_lever then
+            --minetest.chat_send_all('test2')
+            self._last_applied_power = self._power_lever
+            self.engine:set_animation_frame_speed(60 + self._power_lever)
+            ju52.engineSoundPlay(self)
+        end
+    else
+        if self.sound_handle then
+            minetest.sound_stop(self.sound_handle)
+            self.sound_handle = nil
+            self.engine:set_animation_frame_speed(0)
+        end
+    end
+end
+
 function ju52.tail(self, longit_speed, pitch)
     -- adjust pitch at ground
     local tail_lift_min_speed = 3
@@ -793,6 +811,12 @@ function ju52.flightstep(self)
     end
     ------------------------------------------------------
     -- end accell
+    ------------------------------------------------------
+
+    ------------------------------------------------------
+    -- sound and animation
+    ------------------------------------------------------
+    ju52.engine_set_sound_and_animation(self)
     ------------------------------------------------------
 
     --adjust climb indicator
