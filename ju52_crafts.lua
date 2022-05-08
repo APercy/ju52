@@ -1,15 +1,16 @@
 -- wing
-minetest.register_craftitem("ju52:wings",{
-	description = "Ju52 wings",
-	inventory_image = "ju52_wings.png",
-})
+if not minetest.settings:get_bool('ju52.disable_craftitems') then
+    minetest.register_craftitem("ju52:wings",{
+	    description = "Ju52 wings",
+	    inventory_image = "ju52_wings.png",
+    })
 -- fuselage
-minetest.register_craftitem("ju52:body",{
-	description = "Ju52 body",
-	inventory_image = "ju52_body.png",
-})
-
--- trike
+    minetest.register_craftitem("ju52:body",{
+	    description = "Ju52 body",
+	    inventory_image = "ju52_body.png",
+    })
+end
+-- ju52
 minetest.register_craftitem("ju52:ju52", {
 	description = "Ju 52",
 	inventory_image = "ju52.png",
@@ -43,8 +44,7 @@ minetest.register_craftitem("ju52:ju52", {
 --
 -- crafting
 --
-
-if minetest.get_modpath("default") then
+if not minetest.settings:get_bool('ju52.disable_craftitems') and minetest.get_modpath("default") then
 	--[[minetest.register_craft({
 		output = "ju52:wings",
 		recipe = {
@@ -69,3 +69,4 @@ if minetest.get_modpath("default") then
 		}
 	})]]--
 end
+

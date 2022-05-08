@@ -68,6 +68,7 @@ ju52.textures = {
     --"ju52_white.png", --asas
 }
 
+
 dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_global_definitions.lua")
 dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_crafts.lua")
 dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "ju52_control.lua")
