@@ -873,7 +873,7 @@ function ju52.flightstep(self)
         -- new yaw
         local turn_rate = math.rad(30)
         local yaw_turn = self.dtime * math.rad(self._rudder_angle) * turn_rate *
-                    pa28.sign(longit_speed) * math.abs(longit_speed/2)
+                    ju52.sign(longit_speed) * math.abs(longit_speed/2)
 	    newyaw = yaw + yaw_turn
 
         --animate wheels
