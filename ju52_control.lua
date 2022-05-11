@@ -141,7 +141,7 @@ function ju52.control(self, dtime, hull_direction, longit_speed, longit_drag,
         else
             ju52.rudder_auto_correction(self, longit_speed, dtime)
         end
-        self._elevator_angle = airutils.elevator_auto_correction(self, longit_speed, self.dtime, ju52.max_speed, self._elevator_angle, ju52.elevator_limit, ju52.ideal_step)
+        self._elevator_angle = airutils.elevator_auto_correction(self, longit_speed, self.dtime, ju52.max_speed, self._elevator_angle, ju52.elevator_limit, ju52.ideal_step, 100)
     end
 
     return retval_accel, stop
