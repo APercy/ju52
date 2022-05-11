@@ -1,7 +1,8 @@
 ju52={}
 ju52.gravity = tonumber(minetest.settings:get("movement_gravity")) or 9.8
 ju52.wing_angle_of_attack = 1
-ju52.min_speed = 3
+ju52.min_speed = 4
+ju52.max_speed = 9
 ju52.max_engine_acc = 8
 ju52.lift = 8 --12
 ju52.trunk_slots = 50
