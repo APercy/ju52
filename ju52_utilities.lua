@@ -523,8 +523,8 @@ end
 
 function ju52.tail(self, longit_speed, pitch)
     -- adjust pitch at ground
-    local tail_lift_min_speed = 3
-    local tail_lift_max_speed = 8
+    local tail_lift_min_speed = 5
+    local tail_lift_max_speed = 14
     local tail_angle = 17.4
     local new_pitch = pitch
     if math.abs(longit_speed) > tail_lift_min_speed then
