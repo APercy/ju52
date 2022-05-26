@@ -708,6 +708,7 @@ function ju52.flightstep(self)
     end
 
     -- pitch
+    local newpitch = pitch
     if airutils.get_plane_pitch then
         newpitch = airutils.get_plane_pitch(velocity, longit_speed, ju52.min_speed, self._angle_of_attack)
     end
