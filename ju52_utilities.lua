@@ -315,7 +315,7 @@ function ju52.testDamage(self, velocity, position)
     if self._last_vel == nil then return end
     --lets calculate the vertical speed, to avoid the bug on colliding on floor with hard lag
     if abs(velocity.y - self._last_vel.y) > 4 then
-		local noded = mobkit.nodeatpos(mobkit.pos_shift(p,{y=-2.8}))
+		local noded = airutils.nodeatpos(airutils.pos_shift(p,{y=-2.8}))
 	    if (noded and noded.drawtype ~= 'airlike') then
 		    collision = true
 	    else
@@ -333,7 +333,7 @@ function ju52.testDamage(self, velocity, position)
     end
 
     if impact > 1 and self._longit_speed > 2 then
-        local noded = mobkit.nodeatpos(mobkit.pos_shift(p,{y=-2.8}))
+        local noded = airutils.nodeatpos(airutils.pos_shift(p,{y=-2.8}))
 	    if (noded and noded.drawtype ~= 'airlike') then
             minetest.sound_play("ju52_touch", {
                 --to_player = self.driver_name,
@@ -643,7 +643,7 @@ function ju52.flightstep(self)
     if newroll > 360 then newroll = newroll - 360 end
     if newroll < -360 then newroll = newroll + 360 end
 
-    local hull_direction = mobkit.rot_to_dir(rotation) --minetest.yaw_to_dir(yaw)
+    local hull_direction = airutils.rot_to_dir(rotation) --minetest.yaw_to_dir(yaw)
     local nhdir = {x=hull_direction.z,y=0,z=-hull_direction.x}		-- lateral unit vector
 
     local longit_speed = vector.dot(velocity,hull_direction)
@@ -769,7 +769,7 @@ function ju52.flightstep(self)
 
     --lift calculation
     accel.y = accel_y
-    --accel.y = accel.y + mobkit.gravity
+    --accel.y = accel.y + airutils.gravity
 
     --lets apply some bob in water
 	if self.isinliquid then
@@ -813,7 +813,7 @@ function ju52.flightstep(self)
         --[[if player then
             ju52.attach(self, player)
         end]]--
-        mobkit.set_acceleration(self.object, new_accel)
+        airutils.set_acceleration(self.object, new_accel)
     elseif stop == true then
         self._last_accell = {x=0, y=0, z=0}
         self.object:set_velocity({x=0,y=0,z=0})
