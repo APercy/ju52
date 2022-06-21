@@ -152,7 +152,8 @@ function ju52.attach_pax(self, player, is_copilot)
                 minetest.after(1, function()
                     player = minetest.get_player_by_name(name)
                     if player then
-	                    player_api.set_animation(player, "sit")
+                        airutils.sit(player)
+	                    --player_api.set_animation(player, "sit")
                         --apply_physics_override(player, {speed=0,gravity=0,jump=0})
                     end
                 end)
