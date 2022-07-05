@@ -39,11 +39,11 @@ function ju52.attach(self, player)
     end
     player:set_eye_offset({x = 0, y = eye_y, z = 2}, {x = 0, y = 3, z = -30})
     player_api.player_attached[name] = true
+    player_api.set_animation(player, "sit")
     -- make the driver sit
     minetest.after(1, function()
         --player = minetest.get_player_by_name(name)
         if player then
-	        player_api.set_animation(player, "sit")
             airutils.sit(player)
             --apply_physics_override(player, {speed=0,gravity=0,jump=0})
         end
@@ -116,11 +116,11 @@ function ju52.attach_pax(self, player, is_copilot)
             player:set_attach(self.co_pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
             player:set_eye_offset({x = 0, y = eye_y, z = 2}, {x = 0, y = 3, z = -30})
             player_api.player_attached[name] = true
+            player_api.set_animation(player, "sit")
             -- make the driver sit
             minetest.after(1, function()
                 player = minetest.get_player_by_name(name)
                 if player then
-	                player_api.set_animation(player, "sit")
                     airutils.sit(player)
                     --apply_physics_override(player, {speed=0,gravity=0,jump=0})
                 end
@@ -148,11 +148,11 @@ function ju52.attach_pax(self, player, is_copilot)
                     player:set_eye_offset({x = 0, y = eye_y, z = 0}, {x = 0, y = 3, z = -30})
                 end
                 player_api.player_attached[name] = true
+                player_api.set_animation(player, "sit")
                 -- make the driver sit
                 minetest.after(1, function()
                     player = minetest.get_player_by_name(name)
                     if player then
-	                    player_api.set_animation(player, "sit")
                         airutils.sit(player)
                         --apply_physics_override(player, {speed=0,gravity=0,jump=0})
                     end
