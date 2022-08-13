@@ -114,6 +114,10 @@ minetest.register_entity("ju52:ju52", {
     _door_closed = true,
     _door_command = 1, --1 close, 0 open
 
+    _change_color = function(self, colstr)
+        airutils.paint(self, colstr, ju52.skin_texture)
+    end,
+
     get_staticdata = function(self) -- unloaded/unloads ... is now saved
         return minetest.serialize({
             stored_energy = self._energy,
