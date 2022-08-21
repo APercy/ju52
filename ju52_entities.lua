@@ -382,7 +382,19 @@ minetest.register_entity("ju52:ju52", {
         end
         if name == self.driver_name then
             if is_attached then
-                ju52.pilot_formspec(name)
+
+                local itmstck=clicker:get_wielded_item()
+                local item_name = ""
+                if itmstck then item_name = itmstck:get_name() end
+                if (item_name == "compassgps:cgpsmap_marked") then
+                    local meta = minetest.deserialize(itmstck:get_metadata())
+                    if meta then
+                        self._adf_destiny = {x=meta["x"], z=meta["z"]}
+                    end
+                else
+                    ju52.pilot_formspec(name)
+                end
+
             else
                 self.driver_name = nil
             end
