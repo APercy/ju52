@@ -906,6 +906,19 @@ function ju52.flightstep(self)
     self.object:set_bone_position("fuel", {x=0, y=-40.6, z=15.35}, {x=0, y=(energy_indicator_angle+180), z=0})
     self.object:set_bone_position("compass", {x=0, y=-40.55, z=18.2}, {x=0, y=(math.deg(newyaw)), z=0})
 
+    local adf = 0
+    if self._adf == true then
+        if airutils.getAngleFromPositions then
+            adf = airutils.getAngleFromPositions(curr_pos, self._adf_destiny)
+            adf = (adf + math.deg(newyaw))
+            --minetest.chat_send_all(adf)
+        else
+            minetest.chat_send_player(self.driver_name," >>> Impossible to activate the ADF - the airutils lib is outdated")
+        end
+    end
+
+    self.object:set_bone_position("compass_plan", {x=0, y=-40.4, z=18.2}, {x=0, y=adf, z=0})
+
     --altimeters
     local altitude = (curr_pos.y / 0.32) / 100
     local hour, minutes = math.modf( altitude )
@@ -937,12 +950,13 @@ function ju52.flightstep(self)
         ju52.flap_off(self)
     end
 
-    --self.object:set_bone_position("l_aileron", {x=-93.79, y=4.8, z=6.5}, {x=6.7, y=0, z=97.25})
-    --local l_aileron_rotation = {x=1, y=1, z=-2}
-    --local l_aileron_rotation = vector.rotate_around_axis({x=6.7, y=5, z=97.25}, l_aileron_rotation, math.rad(30))
-    --minetest.chat_send_all("x: " .. l_aileron_rotation.x .. " - y: " .. l_aileron_rotation.y .. " - z: " .. l_aileron_rotation.z)
-    --self.object:set_bone_position("l_aileron", {x=-93.79, y=4.8, z=6.5}, l_aileron_rotation)
+    self.object:set_bone_position("aileron_base_r", {x=93.79, y=4.8, z=6.5}, {x=-90, y=174.7, z=-7.4})
+    local r_aileron_rotation = {x=0, y=-self._rudder_angle + 90, z=90}
+    self.object:set_bone_position("r_aileron", {x=0, y=0, z=0}, r_aileron_rotation)
 
+    self.object:set_bone_position("aileron_base_l", {x=-93.79, y=4.8, z=6.5}, {x=90, y=5.3, z=7.4})
+    local l_aileron_rotation = {x=0, y=-self._rudder_angle + 90, z=90}
+    self.object:set_bone_position("l_aileron", {x=0, y=0, z=0}, r_aileron_rotation)
 
     -- calculate energy consumption --
     ju52.consumptionCalc(self, accel)

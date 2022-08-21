@@ -42,6 +42,7 @@ ju52.textures = {
     "ju52_metal.png", "ju52_black.png", --manetes potencia
     "ju52_glass.png", --vidro porta
     "ju52_bege.png", --interno porta
+    "ju52_compass_plan.png", --indicador ADF
     "ju52_engine.png", "ju52_black.png", --motor
     "ju52_engine.png", "ju52_black.png", --motores
     ju52.skin_texture, --fuselagem

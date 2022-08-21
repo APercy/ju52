@@ -113,6 +113,8 @@ minetest.register_entity("ju52:ju52", {
     _inv_id = "",
     _door_closed = true,
     _door_command = 1, --1 close, 0 open
+    _adf = false,
+    _adf_destiny = {x=0,z=0},
 
     _change_color = function(self, colstr)
         airutils.paint(self, colstr, ju52.skin_texture)
@@ -129,6 +131,8 @@ minetest.register_entity("ju52:ju52", {
             stored_color = self._color,
             stored_skin = self._skin,
             stored_inv_id = self._inv_id,
+            stored_adf = self._adf,
+            stored_adf_destiny = self._adf_destiny,
         })
     end,
 
@@ -149,6 +153,8 @@ minetest.register_entity("ju52:ju52", {
             self._color = data.stored_color
             self._skin = data.stored_skin
             self._inv_id = data.stored_inv_id
+            self._adf = data.stored_adf
+            self._adf_destiny = data.stored_adf_destiny
             --minetest.debug("loaded: ", self._energy)
         end
         airutils.setText(self, "Ju 52")
@@ -334,7 +340,8 @@ minetest.register_entity("ju52:ju52", {
         else
 		    local _,indx = item_name:find('dye:')
             if indx and self._engine_running == false  then
-                ju52.paint_formspec(self.owner)
+                local name = puncher:get_player_name()
+                ju52.paint_formspec(name)
                 itmstck:set_count(itmstck:get_count()-1)
 			    puncher:set_wielded_item(itmstck)
             end
