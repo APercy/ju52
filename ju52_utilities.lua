@@ -809,6 +809,12 @@ function ju52.flightstep(self)
     end
     -- end lift
 
+    --wind effects
+    if longit_speed > ju52.min_speed / 2 then
+        local wind = airutils.get_wind(curr_pos, 0.1)
+        new_accel = vector.add(new_accel, wind)
+    end
+
     if stop ~= true then
         self._last_accell = new_accel
 	    --self.object:move_to(curr_pos)
