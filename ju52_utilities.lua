@@ -810,7 +810,7 @@ function ju52.flightstep(self)
     -- end lift
 
     --wind effects
-    if longit_speed > ju52.min_speed / 2 then
+    if longit_speed > ju52.min_speed / 2 and airutils.wind then
         local wind = airutils.get_wind(curr_pos, 0.1)
         new_accel = vector.add(new_accel, wind)
     end
