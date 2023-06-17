@@ -271,6 +271,20 @@ function ju52.destroy(self)
         local player = minetest.get_player_by_name(self.driver_name)
         ju52.dettachPlayer(self, player)
     end
+    --remove pax to prevent bug
+    if self._passenger then 
+        local pax_obj = minetest.get_player_by_name(self._passenger)
+        ju52.dettach_pax(self, pax_obj)
+    end
+    for i = 10,1,-1
+    do 
+        if self._passengers[i] then
+            if self._passengers[i] then
+                local passenger = minetest.get_player_by_name(self._passengers[i])
+                if passenger then ju52.dettach_pax(self, passenger) end
+            end
+        end
+    end
 
     local pos = self.object:get_pos()
     if self.engine then self.engine:remove() end

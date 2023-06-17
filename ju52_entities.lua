@@ -257,6 +257,10 @@ minetest.register_entity("ju52:ju52", {
     logic = ju52.flightstep,
 
 	on_punch = function(self, puncher, ttime, toolcaps, dir, damage)
+        if self.hp_max <= 0 then
+            ju52.destroy(self)
+        end
+
 		if not puncher or not puncher:is_player() then
 			return
 		end
