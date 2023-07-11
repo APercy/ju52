@@ -25,7 +25,7 @@ minetest.register_craftitem("ju52:ju52", {
         --local node_below = minetest.get_node(pointed_pos).name
         --local nodedef = minetest.registered_nodes[node_below]
         
-		pointed_pos.y=pointed_pos.y+3
+		pointed_pos.y=pointed_pos.y+3.0
 		local new_ju52 = minetest.add_entity(pointed_pos, "ju52:ju52")
 		if new_ju52 and placer then
             local ent = new_ju52:get_luaentity()
@@ -34,7 +34,7 @@ minetest.register_craftitem("ju52:ju52", {
 			new_ju52:set_yaw(placer:get_look_horizontal())
 			itemstack:take_item()
             ent.object:set_acceleration({x=0,y=airutils.gravity,z=0})
-            airutils.create_inventory(ent, ju52.trunk_slots, owner)
+            airutils.create_inventory(ent, ent._trunk_slots, owner)
 		end
 
 		return itemstack
@@ -69,4 +69,3 @@ if not minetest.settings:get_bool('ju52.disable_craftitems') and minetest.get_mo
 		}
 	})]]--
 end
-
