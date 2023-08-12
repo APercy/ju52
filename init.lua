@@ -61,7 +61,8 @@ function ju52.step_additional_function(self)
     local climb_angle = airutils.get_gauge_angle(self._climb_rate)
     self.object:set_bone_position("climber1", {x=-9.5, y=-40.6, z=16.6}, {x=0, y=-(climb_angle-90), z=0})
     self.object:set_bone_position("climber2", {x=3.5, y=-40.6, z=16.6}, {x=0, y=-(climb_angle-90), z=0})
-    local energy_indicator_angle = airutils.get_gauge_angle((self._max_fuel - self._energy)/1.5) - 90
+
+    local energy_indicator_angle = airutils.get_gauge_angle((self._max_fuel - self._energy)/3) - 90
     self.object:set_bone_position("fuel", {x=0, y=-40.6, z=15.35}, {x=0, y=(energy_indicator_angle+180), z=0})
     
     self.object:set_bone_position("compass", {x=0, y=-40.55, z=18.2}, {x=0, y=(math.deg(self._yaw)), z=0})
