@@ -207,8 +207,8 @@ ju52.plane_properties = {
     _rudder_limit = 25.0,
     _elevator_limit = 40.0,
     _flap_limit = -30.0, --just a decorarion, in degrees
-    _elevator_response_attenuation = 4,
-    _pitch_intensity = 0.4,
+    _elevator_response_attenuation = 8,
+    _pitch_intensity = 0.2,
     _yaw_intensity = 20,
     _yaw_turn_rate = 10, --degrees
     _elevator_pos = {x=0, y=21.8837, z=-87.2391},
