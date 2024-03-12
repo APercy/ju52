@@ -33,7 +33,7 @@ function ju52.register_parts_method(self)
     airutils.add_paintable_part(self, self.wheels)
 
     local cabin = minetest.add_entity(pos,'ju52:cabin_interactor')
-    cabin:set_attach(self.object,'',{x=0,y=0,z=10},{x=0,y=0,z=0})
+    cabin:set_attach(self.object,'',{x=0,y=0,z=40},{x=0,y=0,z=0})
     self.cabin = cabin
 
     self.object:set_bone_position("aileron_base_r", {x=93.7994, y=3.35, z=-15.3002}, {x=180, y=-7.45, z=5.3})
