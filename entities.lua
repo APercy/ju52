@@ -98,7 +98,13 @@ minetest.register_entity('ju52:cabin_interactor',{
         --=========================
         elseif name == copilot_name then
             if parent_self._command_is_given then
-                parent_self._custom_pilot_formspec(name)  --open the plane menu for the copilot
+                --open the plane menu for the copilot
+                --formspec of the plane
+                if not parent_self._custom_pilot_formspec then
+                    airutils.pilot_formspec(name)
+                else
+                    parent_self._custom_pilot_formspec(name)
+                end
             else
                 airutils.pax_formspec(name)
             end
