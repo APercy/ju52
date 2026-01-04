@@ -1,6 +1,7 @@
 ju52={}
 
 dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "forms.lua")
+dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "walk_map.lua")
 
 ju52.skin_texture = "ju52_painting.png"
 function ju52.set_skin(object, skin_image_name, search_string)
@@ -43,6 +44,10 @@ function ju52.register_parts_method(self)
     self.object:set_bone_position("flap_base_r", {x=49.2648, y=-1.41543, z=-12.0}, {x=0, y=-185.4, z=0})
 
     --ju52.set_skin(self.object, self._skin, ju52.skin_texture)
+
+    --initialize positions
+    ju52.initialize(self)
+
 end
 
 function ju52.destroy_parts_method(self)
@@ -51,6 +56,8 @@ function ju52.destroy_parts_method(self)
 end
 
 function ju52.step_additional_function(self)
+
+    ju52.move_persons(self)
 
     if (self.driver_name==nil) and (self.co_pilot==nil) then --pilot or copilot
         return
@@ -89,6 +96,7 @@ function ju52.step_additional_function(self)
     --power
     local power_angle = ((self._power_lever*1.5)/4.5)
     self.object:set_bone_position("power", {x=1, y=-37.4, z=14}, {x=0, y=-(power_angle - 20), z=90}) --(power_indicator_angle-45)
+
 end
 
 function ju52._custom_punch_when_attached(self, player)
@@ -109,7 +117,7 @@ ju52.plane_properties = {
 	    physical = true,
         collide_with_objects = true,
 	    collisionbox = {-4, -2.31, -4, 4, 1, 4},
-	    selectionbox = {-2, -2.31, -2, 2, 1, 2},
+	    selectionbox = {-2, -2.31, -2, 2, 0, 2},
 	    visual = "mesh",
         backface_culling = false,
 	    mesh = "ju52_body.b3d",
@@ -262,7 +270,7 @@ ju52.plane_properties = {
     logic = airutils.logic,
     on_step = airutils.on_step,
     on_punch = airutils.on_punch,
-    on_rightclick = airutils.on_rightclick,
+    on_rightclick = ju52.right_click_function, --airutils.on_rightclick,
 }
 
 dofile(minetest.get_modpath("ju52") .. DIR_DELIM .. "crafts.lua")
