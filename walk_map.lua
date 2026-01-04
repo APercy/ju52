@@ -264,13 +264,14 @@ function ju52.initialize(self)
         local pos = self.object:get_pos()
         for i = 1,max_pos,1 
         do
-            self._passengers_base_pos[i] = {x=self._seats[i].x, y = self._seats[i].y - 1.5, z = self._seats[i].z}
+            local seat = vector.new(self._seats[i])
+            self._passengers_base_pos[i] = {x=seat.x, y = seat.y, z = seat.z}
             self._passenger_is_sit[i] = 0
             
             if i > 2 then
                 local chair=core.add_entity(pos,'ju52:chair_interactor')
-                local seat_attach = self._seats[i]
-                seat_attach.y = seat_attach.y - 2
+                local seat_attach = vector.new(self._passengers_base_pos[i])
+                seat_attach.y = seat_attach.y - 1.5
                 chair:set_attach(self.object,'',seat_attach,{x=0,y=0,z=0})
                 self._chairs[i] = chair
             else
@@ -307,7 +308,7 @@ local function find_chair_index(self, curr_seat)
 end
 
 local function right_click_chair(self, clicker)
-    local y_correction = 2.0
+    local y_correction = 4.0
     local message = ""
 	if not clicker or not clicker:is_player() then
 		return
