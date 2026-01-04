@@ -23,6 +23,8 @@ end
 
 function ju52.register_parts_method(self)
     --self._skin = self._vehicle_custom_data._skin
+    --initialize positions
+    ju52.initialize(self)
 
     local pos = self.object:get_pos()
 
@@ -44,9 +46,6 @@ function ju52.register_parts_method(self)
     self.object:set_bone_position("flap_base_r", {x=49.2648, y=-1.41543, z=-12.0}, {x=0, y=-185.4, z=0})
 
     --ju52.set_skin(self.object, self._skin, ju52.skin_texture)
-
-    --initialize positions
-    ju52.initialize(self)
 
 end
 
