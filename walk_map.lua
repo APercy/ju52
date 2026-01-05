@@ -230,9 +230,11 @@ function ju52.move_persons(self)
                 --the rest of the passengers
                 if player then
                     if self._passenger_is_sit[i] == 0 then
+                        if not self._last_result_pos then self._last_result_pos = vector.new() end
                         local result_pos = get_result_pos(self, player, i)
                         local y_rot = 0
-                        if result_pos then
+                        if result_pos.x ~= self._last_result_pos.x or result_pos.z ~= self._last_result_pos.z then
+                            --core.chat_send_all(dump(self.dtime))
                             y_rot = result_pos.y -- the only field that returns a rotation
                             local new_pos = ju52.copy_vector(self._passengers_base_pos[i])
                             new_pos.x = new_pos.x - result_pos.z
@@ -245,8 +247,7 @@ function ju52.move_persons(self)
                         end
                         --core.chat_send_all(dump(self._passengers_base_pos[i]))
                         player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = y_rot, z = 0})
-                    else
-                        --ju52.sit_player(self, player, self._passenger_is_sit[i], self._passengers_base[i])
+                        self._last_result_pos = result_pos
                     end
                 else
                     --self._passengers[i] = nil
