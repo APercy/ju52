@@ -88,15 +88,6 @@ local function is_obstacle_zone(pos, start_point, end_point)
     return retVal
 end
 
---[[
-
-    _seats = {
-        {x=-6.5,y=8.7,z=20},{x=6.5,y=8.7,z=20},{x=-6.5,y=6.7,z=9},{x=6.5,y=6.7,z=9},
-        {x=-6.5,y=6.7,z=-0.9},{x=6.5,y=6.7,z=-0.9},{x=-6.5,y=6.7,z=-10.7},{x=6.5,y=6.7,z=-10.7},
-        {x=-6.5,y=6.7,z=-20.5},{x=6.5,y=6.7,z=-20.5},{x=-6.5,y=6.7,z=-30.5},{x=6.5,y=6.7,z=-30.5},
-    },
-
-]]--
 function ju52.cabin_map(self, pos, dpos)
     local orig_pos = ju52.copy_vector(pos)
     local position = ju52.copy_vector(dpos)
