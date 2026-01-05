@@ -41,6 +41,11 @@ local function right_click_controls(self, clicker)
                 airutils.pilot_formspec(name)
                 return
             end
+            --the copilot wants to walk a bit
+            if name == ship_self.co_pilot and ship_self._command_is_given == false then
+                ju52.copilot_formspec(name)
+                return
+            end
             --lets take the control by force
             if name == ship_self.owner or can_bypass then
                 --require the pilot position now
@@ -51,12 +56,27 @@ local function right_click_controls(self, clicker)
                 return
             end
         else
+            --We are counting on copilot now
+            if name == ship_self.co_pilot and (ship_self.driver_name == "" or ship_self.driver_name == nil) then
+                ship_self.driver_name = name
+                airutils.pilot_formspec(name)
+                ju52.bring_copilot(ship_self, name)
+                return
+            end
+            --I donw want to diiiieeeee
+            --[[if (ship_self.co_pilot == "" or ship_self.co_pilot == nil) and (ship_self.driver_name == "" or ship_self.driver_name == nil) then
+                ship_self.driver_name = name
+                airutils.pilot_formspec(name)
+                ju52.bring_copilot(ship_self, name)
+                return
+            end]]--
             --lets take the control by force
             if name == ship_self.owner or can_bypass then
                 --require the pilot position now
                 ju52.owner_formspec(name)
                 return
             else
+                --Adeus!
                 ju52.pax_formspec(name)
             end
         end

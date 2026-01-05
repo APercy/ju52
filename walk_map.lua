@@ -192,6 +192,19 @@ local function get_result_pos(self, player, index)
     return pos
 end
 
+function ju52.sit_player(self, player, value, target)
+    local y_rot = 0
+    if value == 1 then y_rot = 0 end
+    if value == 2 then y_rot = 90 end
+    if value == 3 then y_rot = 180 end
+    if value == 4 then y_rot = 270 end
+    player:set_attach(target, "", {x = 0, y = 3.6, z = 0}, {x = 0, y = y_rot, z = 0})
+
+    local eye_y = -4
+    player:set_eye_offset({x = 0, y = eye_y, z = 2}, {x = 0, y = 1, z = -30})
+
+    airutils.sit(player)
+end
 
 function ju52.move_persons(self)
     --self._passenger = nil
@@ -233,13 +246,7 @@ function ju52.move_persons(self)
                         --core.chat_send_all(dump(self._passengers_base_pos[i]))
                         player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = y_rot, z = 0})
                     else
-                        local y_rot = 0
-                        if self._passenger_is_sit[i] == 1 then y_rot = 0 end
-                        if self._passenger_is_sit[i] == 2 then y_rot = 90 end
-                        if self._passenger_is_sit[i] == 3 then y_rot = 180 end
-                        if self._passenger_is_sit[i] == 4 then y_rot = 270 end
-                        player:set_attach(self._passengers_base[i], "", {x = 0, y = 3.6, z = 0}, {x = 0, y = y_rot, z = 0})
-                        airutils.sit(player)
+                        --ju52.sit_player(self, player, self._passenger_is_sit[i], self._passengers_base[i])
                     end
                 else
                     --self._passengers[i] = nil
@@ -308,7 +315,6 @@ local function find_chair_index(self, curr_seat)
 end
 
 local function right_click_chair(self, clicker)
-    local y_correction = 4.0
     local message = ""
 	if not clicker or not clicker:is_player() then
 		return
@@ -335,18 +341,16 @@ local function right_click_chair(self, clicker)
             if ship_self._passenger_is_sit[index] == 0 and chair_index then
                 local dest_pos = vector.new(ship_self._seats[chair_index])
                 if dest_pos then
-                    dest_pos.y = dest_pos.y - y_correction
+                    dest_pos.y = dest_pos.y
                     ship_self._passengers_base_pos[index] = dest_pos
                     ship_self._passengers_base[index]:set_attach(ship_self.object,'',ship_self._passengers_base_pos[index],{x=0,y=0,z=0})
-                    if math.floor(dest_pos.z) ~= 84 and math.floor(dest_pos.z) ~= 39 then
-                        ship_self._passenger_is_sit[index] = 1
-                    else
-                        ship_self._passenger_is_sit[index] = 3
-                    end
+                    ship_self._passenger_is_sit[index] = 1
+                    ju52.sit_player(ship_self, clicker, ship_self._passenger_is_sit[index], ship_self._passengers_base[index])
                 end
             else
                 ship_self._passenger_is_sit[index] = 0
                 player_api.set_animation(clicker, "walk", 30)
+                clicker:set_eye_offset({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
             end
         end
     end
@@ -492,6 +496,18 @@ function ju52.pax_formspec(name)
     minetest.show_formspec(name, "ju52:passenger_main", basic_form)
 end
 
+function ju52.copilot_formspec(name)
+    local basic_form = table.concat({
+        "formspec_version[3]",
+        "size[6,3]",
+	}, "")
+
+    basic_form = basic_form.."label[1,1.0;Leave seat:]"
+    basic_form = basic_form.."button[1,1.2;4,1;go_out;Click to leave the seat]"
+
+    minetest.show_formspec(name, "ju52:copilot_main", basic_form)
+end
+
 function ju52.owner_formspec(name)
     local basic_form = table.concat({
         "formspec_version[3]",
@@ -578,6 +594,49 @@ function ju52.right_click_function(self, clicker)
 
 end
 
+function ju52.set_player_sit(self, player, player_name, chair_index)
+    --self._at_control = true
+    for i = ju52.total_seats,1,-1 
+    do 
+        if self._passengers[i] == player_name then
+            local index = ju52.get_passenger_seat_index(self, player_name)
+            if index > 0 then
+                if chair_index then
+                    local dest_pos = vector.new(self._seats[chair_index])
+                    if dest_pos then
+                        dest_pos.y = dest_pos.y
+                        self._passengers_base_pos[index] = dest_pos
+                        self._passengers_base[index]:set_attach(self.object,'',self._passengers_base_pos[index],{x=0,y=0,z=0})
+                        self._passenger_is_sit[index] = 1
+                        ju52.sit_player(self, player, self._passenger_is_sit[index], self._passengers_base[index])
+                    end
+                    break
+                end
+            end
+        end
+    end --end for
+end
+
+function ju52.bring_copilot(self, copilot_name)
+    local new_copilot_player_obj = core.get_player_by_name(copilot_name)
+    if new_copilot_player_obj and self then
+        --then move the current copilot to a free seat
+        if self.co_pilot then
+            local index = ju52.get_passenger_seat_index(self, self.co_pilot)
+            self.co_pilot = nil
+            if index > 0 then
+                self._passenger_is_sit[index] = 0
+                player_api.set_animation(new_copilot_player_obj, "walk", 30)
+            end
+        end
+        
+        --so bring the new copilot
+        self.co_pilot = copilot_name
+
+        ju52.set_player_sit(self, new_copilot_player_obj, copilot_name, 2)
+    end
+end
+
 minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if formname == "ju52:passenger_main" then
         local name = player:get_player_name()
@@ -599,6 +658,29 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
         minetest.close_formspec(name, "ju52:passenger_main")
 	end
+	if formname == "ju52:copilot_main" then
+        local name = player:get_player_name()
+        local plane_obj = airutils.getPlaneFromPlayer(player)
+        if plane_obj == nil then
+            minetest.close_formspec(name, "ju52:copilot_main")
+            return
+        end
+        local ent = plane_obj:get_luaentity()
+        if ent then
+            if fields.go_out then
+                local index = ju52.get_passenger_seat_index(ent, name)
+                if index > 0 then
+                    ent._passenger_is_sit[index] = 0
+                    player_api.set_animation(player, "walk", 30)
+                    player:set_eye_offset({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+
+                    core.close_formspec(name, "ju52:copilot_main")
+                    return true --stop and dont call the original method
+                end
+            end
+        end
+        minetest.close_formspec(name, "ju52:copilot_main")
+	end
     if formname == "ju52:owner_main" then
         local name = player:get_player_name()
         local plane_obj = airutils.getPlaneFromPlayer(player)
@@ -610,39 +692,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         if ent then
 		    if fields.take then
                 ent._at_control = true
-                for i = ju52.total_seats,1,-1 
-                do 
-                    if ent._passengers[i] == name then
-
-                        local y_correction = 4.0
-                        local index = ju52.get_passenger_seat_index(ent, name)
-                        if index > 0 then
-                            local chair_index = 1 -- pilot -- find_chair_index(ent, self.object)
-                            --minetest.chat_send_all("index: "..chair_index)
-                            if ent._passenger_is_sit[index] == 0 and chair_index then
-                                local dest_pos = vector.new(ent._seats[chair_index])
-                                if dest_pos then
-                                    dest_pos.y = dest_pos.y - y_correction
-                                    ent._passengers_base_pos[index] = dest_pos
-                                    ent._passengers_base[index]:set_attach(ent.object,'',ent._passengers_base_pos[index],{x=0,y=0,z=0})
-                                    if math.floor(dest_pos.z) ~= 84 and math.floor(dest_pos.z) ~= 39 then
-                                        ent._passenger_is_sit[index] = 1
-                                    else
-                                        ent._passenger_is_sit[index] = 3
-                                    end
-                                end
-                            else
-                                ent._passenger_is_sit[index] = 0
-                                player_api.set_animation(player, "walk", 30)
-                            end
-                        end
-                        ent.driver_name = name
-
-                        minetest.close_formspec(name, "ju52:owner_main")
-                        return
-
-                    end
-                end
+                ent.driver_name = name
+                minetest.close_formspec(name, "ju52:owner_main")
+                airutils.pilot_formspec(name)
+                ju52.set_player_sit(ent, player, name, 1)
+                return
 		    end
         end
         minetest.close_formspec(name, "ju52:owner_main")
@@ -656,8 +710,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 local index = ju52.get_passenger_seat_index(ent, name)
                 if index > 0 then
                     ent.driver_name = ""
+
                     ent._passenger_is_sit[index] = 0
                     player_api.set_animation(player, "walk", 30)
+                    player:set_eye_offset({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
+
                     core.close_formspec(name, "lib_planes:pilot_main")
                     return true --stop and dont call the original method
                 end
@@ -675,51 +732,9 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         local ent = plane_obj:get_luaentity()
 
         if fields.copilot then
-            local new_copilot_player_obj = core.get_player_by_name(fields.copilot)
-            if new_copilot_player_obj and ent then
-                --then move the current copilot to a free seat
-                if ent.co_pilot then
-                    local index = ju52.get_passenger_seat_index(ent, ent.co_pilot)
-                    ent.co_pilot = nil
-                    if index > 0 then
-                        ent._passenger_is_sit[index] = 0
-                        player_api.set_animation(new_copilot_player_obj, "walk", 30)
-                    end
-                end
-                
-                --so bring the new copilot
-                ent.co_pilot = fields.copilot
-                --self._passengers[2] = name
-                --player:set_attach(self.co_pilot_seat_base, "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-
-                --ent._at_control = true
-                for i = ju52.total_seats,1,-1 
-                do 
-                    if ent._passengers[i] == ent.co_pilot then
-                        local y_correction = 4.0
-                        local index = ju52.get_passenger_seat_index(ent, ent.co_pilot)
-                        if index > 0 then
-                            local chair_index = 2 -- copilot 
-                            if chair_index then
-                                local dest_pos = vector.new(ent._seats[chair_index])
-                                if dest_pos then
-                                    dest_pos.y = dest_pos.y - y_correction
-                                    ent._passengers_base_pos[index] = dest_pos
-                                    ent._passengers_base[index]:set_attach(ent.object,'',ent._passengers_base_pos[index],{x=0,y=0,z=0})
-                                    if math.floor(dest_pos.z) ~= 84 and math.floor(dest_pos.z) ~= 39 then
-                                        ent._passenger_is_sit[index] = 1
-                                    else
-                                        ent._passenger_is_sit[index] = 3
-                                    end
-                                end
-                            end
-                        end
-
-                        minetest.close_formspec(name, "lib_planes:manage_copilot")
-                        return true
-                    end
-                end --end for
-            end
+            ju52.bring_copilot(ent, fields.copilot)
+            minetest.close_formspec(name, "lib_planes:manage_copilot")
+            return true
         end
         core.close_formspec(name, "lib_planes:manage_copilot")
     end
