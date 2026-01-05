@@ -1,4 +1,4 @@
-
+local S = airutils.S
 --
 -- entity
 --
@@ -38,7 +38,19 @@ local function right_click_controls(self, clicker)
         if ship_self.driver_name ~= nil and ship_self.driver_name ~= "" then
             --shows pilot formspec
             if name == ship_self.driver_name or (name == ship_self.co_pilot and ship_self._command_is_given == true) then
-                airutils.pilot_formspec(name)
+                local itmstck=clicker:get_wielded_item()
+                local item_name = ""
+                if itmstck then item_name = itmstck:get_name() end
+                --adf program function
+                if (item_name == "compassgps:cgpsmap_marked") then
+                    local meta = minetest.deserialize(itmstck:get_metadata())
+                    if meta then
+                        ship_self._adf_destiny = {x=meta["x"], z=meta["z"]}
+                        core.chat_send_player(ship_self.driver_name,core.colorize('#00ff00', S(" >>> Adf set to new coordinates. X: "..meta["x"].."  Z: "..meta["z"])))
+                    end
+                else
+                    airutils.pilot_formspec(name)
+                end
                 return
             end
             --the copilot wants to walk a bit
