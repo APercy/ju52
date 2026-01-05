@@ -230,7 +230,7 @@ function ju52.move_persons(self)
                         --core.chat_send_all(dump(new_pos))
                         local pos_d = ju52.navigate_deck(self, self._passengers_base_pos[i], new_pos, player)
                         --core.chat_send_all(dump(height))
-                        if self._passengers_base_pos[i].x ~= pos_d.x and self._passengers_base_pos[i].z ~= pos_d.z then
+                        if self._passengers_base_pos[i].x ~= pos_d.x or self._passengers_base_pos[i].z ~= pos_d.z or self._passengers_base_pos[i].y ~= pos_d.y then
                             --core.chat_send_all(dump(self.dtime))
                             self._passengers_base_pos[i] = ju52.copy_vector(pos_d)
                             self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
