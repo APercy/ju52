@@ -230,24 +230,22 @@ function ju52.move_persons(self)
                 --the rest of the passengers
                 if player then
                     if self._passenger_is_sit[i] == 0 then
-                        if not self._last_result_pos then self._last_result_pos = vector.new() end
                         local result_pos = get_result_pos(self, player, i)
                         local y_rot = 0
-                        if result_pos.x ~= self._last_result_pos.x or result_pos.z ~= self._last_result_pos.z then
+                        y_rot = result_pos.y -- the only field that returns a rotation
+                        local new_pos = ju52.copy_vector(self._passengers_base_pos[i])
+                        new_pos.x = new_pos.x - result_pos.z
+                        new_pos.z = new_pos.z - result_pos.x
+                        --core.chat_send_all(dump(new_pos))
+                        local pos_d = ju52.navigate_deck(self, self._passengers_base_pos[i], new_pos, player)
+                        --core.chat_send_all(dump(height))
+                        if self._passengers_base_pos[i].x ~= pos_d.x and self._passengers_base_pos[i].z ~= pos_d.z then
                             --core.chat_send_all(dump(self.dtime))
-                            y_rot = result_pos.y -- the only field that returns a rotation
-                            local new_pos = ju52.copy_vector(self._passengers_base_pos[i])
-                            new_pos.x = new_pos.x - result_pos.z
-                            new_pos.z = new_pos.z - result_pos.x
-                            --core.chat_send_all(dump(new_pos))
-                            local pos_d = ju52.navigate_deck(self, self._passengers_base_pos[i], new_pos, player)
-                            --core.chat_send_all(dump(height))
                             self._passengers_base_pos[i] = ju52.copy_vector(pos_d)
                             self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
                         end
                         --core.chat_send_all(dump(self._passengers_base_pos[i]))
                         player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = y_rot, z = 0})
-                        self._last_result_pos = result_pos
                     end
                 else
                     --self._passengers[i] = nil
