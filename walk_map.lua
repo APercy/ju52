@@ -8,7 +8,11 @@ local function do_attach(self, player, slot)
         --minetest.chat_send_all(self.driver_name)
         self._passengers[slot] = name
         player:set_attach(self._passengers_base[slot], "", {x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
-        player_api.player_attached[name] = true
+        if airutils.is_minetest then
+            player_api.player_attached[name] = true
+        elseif airutils.is_mcl then
+            mcl_player.player_attached[name] = true
+        end
         self._passenger_is_sit[slot] = 0
     end
 end
@@ -152,7 +156,11 @@ local function get_result_pos(self, player, index)
 
 
         if ctrl.up or ctrl.down or ctrl.left or ctrl.right then
-            player_api.set_animation(player, "walk", 30)
+            if airutils.is_minetest then
+                player_api.set_animation(player, "walk", 30)
+            elseif airutils.is_mcl then
+                mcl_player.player_set_animation(player, "walk")
+            end
 
             local speed = 0.4
 
@@ -177,7 +185,11 @@ local function get_result_pos(self, player, index)
                         ephemeral = true,})
             end
         else
-            player_api.set_animation(player, "stand")
+            if airutils.is_minetest then
+                player_api.set_animation(player, "stand")
+            elseif airutils.is_mcl then
+                mcl_player.player_set_animation(player, "stand")
+            end
         end
     end
     return pos
@@ -339,7 +351,11 @@ local function right_click_chair(self, clicker)
                 end
             else
                 ship_self._passenger_is_sit[index] = 0
-                player_api.set_animation(clicker, "walk", 30)
+                if airutils.is_minetest then
+                    player_api.set_animation(clicker, "walk", 30)
+                elseif airutils.is_mcl then
+                    mcl_player.player_set_animation(clicker, "walk")
+                end
                 clicker:set_eye_offset({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
             end
         end
@@ -616,7 +632,11 @@ function ju52.bring_copilot(self, copilot_name)
             self.co_pilot = nil
             if index > 0 then
                 self._passenger_is_sit[index] = 0
-                player_api.set_animation(new_copilot_player_obj, "walk", 30)
+                if airutils.is_minetest then
+                    player_api.set_animation(new_copilot_player_obj, "walk", 30)
+                elseif airutils.is_mcl then
+                    mcl_player.player_set_animation(new_copilot_player_obj, "walk")
+                end
             end
         end
         
@@ -661,7 +681,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                 local index = ju52.get_passenger_seat_index(ent, name)
                 if index > 0 then
                     ent._passenger_is_sit[index] = 0
-                    player_api.set_animation(player, "walk", 30)
+                    if airutils.is_minetest then
+                        player_api.set_animation(player, "walk", 30)
+                    elseif airutils.is_mcl then
+                        mcl_player.player_set_animation(player, "walk")
+                    end
                     player:set_eye_offset({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
 
                     core.close_formspec(name, "ju52:copilot_main")
@@ -702,7 +726,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
                     ent.driver_name = ""
 
                     ent._passenger_is_sit[index] = 0
-                    player_api.set_animation(player, "walk", 30)
+                    if airutils.is_minetest then
+                        player_api.set_animation(player, "walk", 30)
+                    elseif airutils.is_mcl then
+                        mcl_player.player_set_animation(player, "walk")
+                    end
                     player:set_eye_offset({x = 0, y = 0, z = 0}, {x = 0, y = 0, z = 0})
 
                     core.close_formspec(name, "lib_planes:pilot_main")
