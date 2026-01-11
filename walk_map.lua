@@ -648,14 +648,18 @@ function ju52.bring_copilot(self, copilot_name)
 end
 
 minetest.register_on_player_receive_fields(function(player, formname, fields)
+    local name = player:get_player_name()
+    local plane_obj = airutils.getPlaneFromPlayer(player)
+    local ent = nil
+    if plane_obj then
+        ent = plane_obj:get_luaentity()
+        if not ent then return end
+    end
 	if formname == "ju52:passenger_main" then
-        local name = player:get_player_name()
-        local plane_obj = airutils.getPlaneFromPlayer(player)
         if plane_obj == nil then
             minetest.close_formspec(name, "ju52:passenger_main")
             return
         end
-        local ent = plane_obj:get_luaentity()
         if ent then
             if fields.go_out then
                 local touching_ground, _ = airutils.check_node_below(plane_obj, 2.5)
@@ -669,13 +673,10 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         minetest.close_formspec(name, "ju52:passenger_main")
 	end
 	if formname == "ju52:copilot_main" then
-        local name = player:get_player_name()
-        local plane_obj = airutils.getPlaneFromPlayer(player)
         if plane_obj == nil then
             minetest.close_formspec(name, "ju52:copilot_main")
             return
         end
-        local ent = plane_obj:get_luaentity()
         if ent then
             if fields.go_out then
                 local index = ju52.get_passenger_seat_index(ent, name)
@@ -695,14 +696,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
         minetest.close_formspec(name, "ju52:copilot_main")
 	end
-    if formname == "ju52:owner_main" then
-        local name = player:get_player_name()
-        local plane_obj = airutils.getPlaneFromPlayer(player)
+    if formname == "ju52:owner_main" and string.sub(ent.name, 1, 5) == "ju52:" then
         if plane_obj == nil then
             minetest.close_formspec(name, "ju52:owner_main")
             return
         end
-        local ent = plane_obj:get_luaentity()
         if ent then
 		    if fields.take then
                 ent._at_control = true
@@ -715,14 +713,12 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
         minetest.close_formspec(name, "ju52:owner_main")
     end
-    if formname == "lib_planes:pilot_main" then --yes, it's a method overwriting
-        local name = player:get_player_name()
-        local plane_obj = airutils.getPlaneFromPlayer(player)
+    local plane_obj = airutils.getPlaneFromPlayer(player)
+    if formname == "lib_planes:pilot_main" and string.sub(ent.name, 1, 5) == "ju52:" then --yes, it's a method overwriting
         if plane_obj then
-            local ent = plane_obj:get_luaentity()
             if fields.go_out then
                 local index = ju52.get_passenger_seat_index(ent, name)
-                if index > 0 then
+                if index and index > 0 then
                     ent.driver_name = ""
 
                     ent._passenger_is_sit[index] = 0
@@ -740,15 +736,11 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
         core.close_formspec(name, "lib_planes:pilot_main")
     end
-    if formname == "lib_planes:manage_copilot" then
-        local name = player:get_player_name()
-        local plane_obj = airutils.getPlaneFromPlayer(player)
+    if formname == "lib_planes:manage_copilot" and string.sub(ent.name, 1, 5) == "ju52:" then
         if plane_obj == nil then
             core.close_formspec(name, "lib_planes:manage_copilot")
             return true
         end
-        local ent = plane_obj:get_luaentity()
-
         if fields.copilot then
             ju52.bring_copilot(ent, fields.copilot)
             minetest.close_formspec(name, "lib_planes:manage_copilot")
