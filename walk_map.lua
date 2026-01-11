@@ -696,7 +696,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
         minetest.close_formspec(name, "ju52:copilot_main")
 	end
-    if formname == "ju52:owner_main" and string.sub(ent.name, 1, 5) == "ju52:" then
+    if formname == "ju52:owner_main" and string.sub(ent.name, 1, 4) == "ju52" then
         if plane_obj == nil then
             minetest.close_formspec(name, "ju52:owner_main")
             return
@@ -714,7 +714,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         minetest.close_formspec(name, "ju52:owner_main")
     end
     local plane_obj = airutils.getPlaneFromPlayer(player)
-    if formname == "lib_planes:pilot_main" and string.sub(ent.name, 1, 5) == "ju52:" then --yes, it's a method overwriting
+    if formname == "lib_planes:pilot_main" and string.sub(ent.name, 1, 4) == "ju52" then --yes, it's a method overwriting
         if plane_obj then
             if fields.go_out then
                 local index = ju52.get_passenger_seat_index(ent, name)
@@ -736,7 +736,7 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
         end
         core.close_formspec(name, "lib_planes:pilot_main")
     end
-    if formname == "lib_planes:manage_copilot" and string.sub(ent.name, 1, 5) == "ju52:" then
+    if formname == "lib_planes:manage_copilot" and string.sub(ent.name, 1, 4) == "ju52" then
         if plane_obj == nil then
             core.close_formspec(name, "lib_planes:manage_copilot")
             return true
