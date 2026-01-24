@@ -627,25 +627,26 @@ function ju52.set_player_sit(self, player, player_name, chair_index)
 end
 
 function ju52.bring_copilot(self, copilot_name)
+    if not copilot_name then return end
     local new_copilot_player_obj = core.get_player_by_name(copilot_name)
     if new_copilot_player_obj and self then
         --then move the current copilot to a free seat
         if self.co_pilot then
             local index = ju52.get_passenger_seat_index(self, self.co_pilot)
-            self.co_pilot = nil
             if index > 0 then
                 self._passenger_is_sit[index] = 0
+                local previous_copilot_obj = core.get_player_by_name(self.co_pilot)
+                self.co_pilot = nil
                 if airutils.is_minetest then
-                    player_api.set_animation(new_copilot_player_obj, "walk", 30)
+                    player_api.set_animation(previous_copilot_obj, "walk", 30)
                 elseif airutils.is_mcl then
-                    mcl_player.player_set_animation(new_copilot_player_obj, "walk")
+                    mcl_player.player_set_animation(previous_copilot_obj, "walk")
                 end
             end
         end
         
         --so bring the new copilot
         self.co_pilot = copilot_name
-
         ju52.set_player_sit(self, new_copilot_player_obj, copilot_name, 2)
     end
 end
