@@ -335,6 +335,9 @@ local function right_click_chair(self, clicker)
         end
     end
 
+    if name == ship_self.driver_name or name == ship_self.co_pilot then return end
+    --core.chat_send_all(dump(core.get_us_time()))
+
     if is_attached then
         local index = ju52.get_passenger_seat_index(ship_self, name)
         if index > 0 then
