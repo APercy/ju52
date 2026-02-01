@@ -62,6 +62,11 @@ function ju52.step_additional_function(self)
         return
     end
 
+    --power
+    local power_angle = ((self._power_lever*1.5)/4.5)
+    self.object:set_bone_position("power_lever", {x=1, y=-37.4, z=14}, {x=0, y=-(power_angle - 20), z=90}) --(power_indicator_angle-45)
+    --core.chat_send_all("power angle: "..power_angle)
+
     local pos = self._curr_pos
 
     local speed_angle = airutils.get_gauge_angle(self._indicated_speed, -45)
@@ -91,11 +96,6 @@ function ju52.step_additional_function(self)
 
     self.object:set_bone_position("altimeter_p1_2", {x=9.5, y=-40.6, z=16.6}, {x=0, y=-(hour_angle), z=0})
     self.object:set_bone_position("altimeter_p2_2", {x=9.5, y=-41.1, z=16.6}, {x=0, y=-(minute_angle), z=0})
-
-    --power
-    local power_angle = ((self._power_lever*1.5)/4.5)
-    self.object:set_bone_position("power", {x=1, y=-37.4, z=14}, {x=0, y=-(power_angle - 20), z=90}) --(power_indicator_angle-45)
-
 end
 
 function ju52._custom_punch_when_attached(self, player)
