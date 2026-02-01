@@ -334,6 +334,7 @@ local function right_click_chair(self, clicker)
             is_attached = true
         end
     end
+    if not ship_self then return end
 
     if name == ship_self.driver_name or name == ship_self.co_pilot then return end
     --core.chat_send_all(dump(core.get_us_time()))
