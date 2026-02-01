@@ -7,7 +7,8 @@ airline system for the future. But it is already flyable, and can carry up to 12
 
 The main functions of the aircraft are found in the internal menu, activated with the right click.
 There is a second menu, for applying skins, but it only appears when hitting a dye on the aircraft,
-being INSIDE it. For other colors, you can use a dye on the OUTSIDE with the desired color,
+being INSIDE it, punching the center of the plane corridor. For other colors, you can use a dye on
+the OUTSIDE with the desired color,
 it is also possible to use the painter from the bike mod or from the automobiles_pck mod.
 
 In order for passengers to board, it is necessary to open the door, otherwise no one will be able to enter.
@@ -16,7 +17,7 @@ While the machine is off, it is possible to move it using the sneak and jump key
 W ans S controls the pitch (elevator).
 Right and Left (A and D) controls the yaw (rudder).
 
-Then to fly, start the engine with the special key E. Press jump (space)
+Then to fly, start the engine on menu. Press jump (space)
 to increase the engine power. Set it to the maximum. Pull the elevator control (S)
 when it have the speed to lift.
 
