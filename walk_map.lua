@@ -14,6 +14,8 @@ local function do_attach(self, player, slot)
             mcl_player.player_attached[name] = true
         end
         self._passenger_is_sit[slot] = 0
+
+        --self.object:set_bone_override("p"..slot, {position = {vec = self._passengers_base_pos[slot], absolute = true},})
     end
 end
 
@@ -201,12 +203,14 @@ function ju52.sit_player(self, player, value, target)
     if value == 2 then y_rot = 90 end
     if value == 3 then y_rot = 180 end
     if value == 4 then y_rot = 270 end
+    --core.chat_send_all("rot: "..dump(y_rot))
     player:set_attach(target, "", {x = 0, y = 3.6, z = 0}, {x = 0, y = y_rot, z = 0})
 
     local eye_y = -4
     player:set_eye_offset({x = 0, y = eye_y, z = 2}, {x = 0, y = 1, z = -30})
 
     airutils.sit(player)
+    --player:set_rotation({x = 0, y = y_rot, z = 0})
 end
 
 function ju52.move_persons(self)
@@ -245,7 +249,8 @@ function ju52.move_persons(self)
                         if self._passengers_base_pos[i].x ~= pos_d.x or self._passengers_base_pos[i].z ~= pos_d.z or self._passengers_base_pos[i].y ~= pos_d.y then
                             --core.chat_send_all(dump(self.dtime))
                             self._passengers_base_pos[i] = ju52.copy_vector(pos_d)
-                            self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
+                            --self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
+                            self.object:set_bone_override("p"..i, {position = {vec = self._passengers_base_pos[i], absolute = true},})
                         end
                         --core.chat_send_all(dump(self._passengers_base_pos[i]))
                         player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = y_rot, z = 0})
@@ -349,7 +354,8 @@ local function right_click_chair(self, clicker)
                 if dest_pos then
                     dest_pos.y = dest_pos.y
                     ship_self._passengers_base_pos[index] = dest_pos
-                    ship_self._passengers_base[index]:set_attach(ship_self.object,'',ship_self._passengers_base_pos[index],{x=0,y=0,z=0})
+                    --ship_self._passengers_base[index]:set_attach(ship_self.object,'',ship_self._passengers_base_pos[index],{x=0,y=0,z=0})
+                    ship_self.object:set_bone_override("p"..index, {position = {vec = ship_self._passengers_base_pos[index], absolute = true},})
                     ship_self._passenger_is_sit[index] = 1
                     ju52.sit_player(ship_self, clicker, ship_self._passenger_is_sit[index], ship_self._passengers_base[index])
                 end
@@ -472,7 +478,8 @@ function ju52.attach_pax(self, player, slot)
             if name == self.owner then
                 --put the owner on cabin directly
                 self._passengers_base_pos[i] = {x=0,y=3.2,z=-45}
-                self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
+                --self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
+                self.object:set_bone_override("p"..i, {position = {vec = self._passengers_base_pos[i], absolute = true},})
             end
             break
         end
@@ -616,7 +623,8 @@ function ju52.set_player_sit(self, player, player_name, chair_index)
                     if dest_pos then
                         dest_pos.y = dest_pos.y
                         self._passengers_base_pos[index] = dest_pos
-                        self._passengers_base[index]:set_attach(self.object,'',self._passengers_base_pos[index],{x=0,y=0,z=0})
+                        --self._passengers_base[index]:set_attach(self.object,'',self._passengers_base_pos[index],{x=0,y=0,z=0})
+                        self.object:set_bone_override("p"..index, {position = {vec = self._passengers_base_pos[index], absolute = true},})
                         self._passenger_is_sit[index] = 1
                         ju52.sit_player(self, player, self._passenger_is_sit[index], self._passengers_base[index])
                     end

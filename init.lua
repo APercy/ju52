@@ -21,6 +21,16 @@ function ju52.set_skin(object, skin_image_name, search_string)
     end
 end
 
+local function on_activate(self, staticdata, dtime_s)
+    airutils.on_activate(self, staticdata, dtime_s)
+
+    for i = 1,#self._seats,1
+    do
+        --TODO -- need to understand WHY I had to put it 180 degrees to walk correctly
+        self._passengers_base[i]:set_attach(self.object, 'p'..i, {x=0,y=0,z=0}, {x=0,y=180,z=0})
+    end
+end
+
 function ju52.register_parts_method(self)
     --self._skin = self._vehicle_custom_data._skin
     --initialize positions
@@ -265,7 +275,7 @@ ju52.plane_properties = {
 
     get_staticdata = airutils.get_staticdata,
     on_deactivate = airutils.on_deactivate,
-    on_activate = airutils.on_activate,
+    on_activate = on_activate,
     logic = airutils.logic,
     on_step = airutils.on_step,
     on_punch = airutils.on_punch,
