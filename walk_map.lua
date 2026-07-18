@@ -250,10 +250,11 @@ function ju52.move_persons(self)
                             --core.chat_send_all(dump(self.dtime))
                             self._passengers_base_pos[i] = ju52.copy_vector(pos_d)
                             --self._passengers_base[i]:set_attach(self.object,'',self._passengers_base_pos[i],{x=0,y=0,z=0})
-                            self.object:set_bone_override("p"..i, {position = {vec = self._passengers_base_pos[i], absolute = true},})
+                            --self.object:set_bone_override("p"..i, {position = {vec = self._passengers_base_pos[i], absolute = true},})
                         end
                         --core.chat_send_all(dump(self._passengers_base_pos[i]))
-                        player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = y_rot, z = 0})
+                        --player:set_attach(self._passengers_base[i], "", {x = 0, y = 0, z = 0}, {x = 0, y = y_rot, z = 0})
+                        self.object:set_bone_override("p"..i, {rotation = {vec = {x = 0, y = math.rad(y_rot), z = 0}, absolute = false}, position = {vec = self._passengers_base_pos[i], absolute = true}})
                     end
                 else
                     --self._passengers[i] = nil
